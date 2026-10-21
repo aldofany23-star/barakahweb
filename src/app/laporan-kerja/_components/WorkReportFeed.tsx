@@ -70,7 +70,7 @@ export function WorkReportFeed({ initialReports }: WorkReportFeedProps) {
           sortedReports.map((report) => (
             <div
               key={report.id}
-              className={`p-5 bg-white rounded-3xl border transition shadow-xs ${
+              className={`p-5 bg-white rounded-3xl border transition smooth-card ${
                 report.is_pinned
                   ? 'border-amber-400 bg-amber-50/20 ring-1 ring-amber-300'
                   : 'border-[#E5E7EB]'

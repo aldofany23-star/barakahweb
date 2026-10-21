@@ -25,7 +25,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-[420px] bg-white rounded-2xl border border-[#E5E7EB] p-8 sm:p-10 shadow-sm">
+    <div className="w-full max-w-[420px] bg-white rounded-3xl border border-[#E5E7EB] p-8 sm:p-10 smooth-card-static">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-[#1E1E1E]">Welcome Back</h2>
         <p className="text-sm text-[#8B8B8B] mt-2">Please log in to your account</p>

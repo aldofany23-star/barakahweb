@@ -1,9 +1,17 @@
 import type { Metadata } from 'next'
+import { Archivo } from 'next/font/google'
 import './globals.css'
 import { getSession } from '@/lib/session'
 import { getActiveShift } from '@/lib/actions/shiftActions'
 import { Sidebar } from '@/components/Sidebar'
 import { Header } from '@/components/Header'
+
+const archivo = Archivo({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  display: 'swap',
+  variable: '--font-archivo',
+})
 
 export const dynamic = 'force-dynamic'
 
@@ -21,7 +29,7 @@ export default async function RootLayout({
   const currentShift = session ? await getActiveShift() : null
 
   return (
-    <html lang="id">
+    <html lang="id" className={archivo.variable}>
       <body className="antialiased bg-[#F9F9F9] text-[#1E1E1E] min-h-screen">
         {session ? (
           <div className="flex min-h-screen">

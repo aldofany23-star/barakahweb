@@ -132,9 +132,9 @@ export function SalesReportsView({
         </button>
       </div>
 
-      {/* KPI Cards (Clean White Surface, Border #E5E7EB) */}
+      {/* KPI Cards (Clean White Surface, Border #E5E7EB, Smooth Shadows) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] smooth-card">
           <div className="text-xs font-medium text-[#8B8B8B] mb-1">Total Omset</div>
           <div className="text-lg sm:text-xl font-black text-[#00A250]">
             {formatRupiah(metrics.totalOmset)}
@@ -142,7 +142,7 @@ export function SalesReportsView({
           <div className="text-[10px] text-[#8B8B8B] mt-1">{metrics.count} transaksi</div>
         </div>
 
-        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] smooth-card">
           <div className="text-xs font-medium text-[#8B8B8B] mb-1">Total Transaksi</div>
           <div className="text-lg sm:text-xl font-black text-[#1E1E1E]">
             {metrics.count} struk
@@ -150,7 +150,7 @@ export function SalesReportsView({
           <div className="text-[10px] text-[#8B8B8B] mt-1">Rata-rata: {formatRupiah(metrics.avg)}</div>
         </div>
 
-        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] smooth-card">
           <div className="text-xs font-medium text-[#8B8B8B] mb-1">Uang Tunai (Cash)</div>
           <div className="text-lg sm:text-xl font-black text-[#1E1E1E]">
             {formatRupiah(metrics.cashRevenue)}
@@ -158,7 +158,7 @@ export function SalesReportsView({
           <div className="text-[10px] text-[#8B8B8B] mt-1">Laci kasir</div>
         </div>
 
-        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] smooth-card">
           <div className="text-xs font-medium text-[#8B8B8B] mb-1">QRIS & Transfer</div>
           <div className="text-lg sm:text-xl font-black text-[#1E1E1E]">
             {formatRupiah(metrics.nonCashRevenue)}
@@ -208,7 +208,7 @@ export function SalesReportsView({
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden shadow-xs">
+      <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden smooth-card-static">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#F9F9F9] text-[#8B8B8B] uppercase tracking-wider font-bold border-b border-[#E5E7EB]">

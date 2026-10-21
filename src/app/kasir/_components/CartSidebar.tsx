@@ -31,7 +31,7 @@ export function CartSidebar({
   const totalItemCount = items.reduce((s, it) => s + it.qty, 0)
 
   return (
-    <div className="w-full xl:w-[380px] bg-white rounded-3xl border border-[#E5E7EB] flex flex-col h-full shadow-xs">
+    <div className="w-full xl:w-[380px] bg-white rounded-3xl border border-[#E5E7EB] flex flex-col h-full smooth-card-static">
       {/* Header (Matches Android: "Keranjang Pesanan" 18sp Bold) */}
       <div className="p-5 border-b border-[#E5E7EB] flex items-center justify-between">
         <div>
@@ -63,7 +63,7 @@ export function CartSidebar({
           items.map((item) => (
             <div
               key={item.id}
-              className="p-3 bg-white rounded-xl border border-[#E5E7EB] flex items-center justify-between gap-3"
+              className="p-3 bg-white rounded-xl border border-[#E5E7EB] flex items-center justify-between gap-3 smooth-card-static"
             >
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-xs text-[#1E1E1E] truncate">

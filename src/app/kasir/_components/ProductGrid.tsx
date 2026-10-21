@@ -143,7 +143,7 @@ export function ProductGrid({
               return (
                 <div
                   key={p.id}
-                  className="bg-white rounded-2xl border border-[#E5E7EB] p-4 flex flex-col justify-between shadow-xs transition hover:shadow-sm"
+                  className="bg-white rounded-2xl border border-[#E5E7EB] p-4 flex flex-col justify-between smooth-card"
                 >
                   <div>
                     {/* Category uppercase (Matches line 838 CashierScreen.kt) */}

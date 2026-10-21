@@ -173,7 +173,7 @@ export function ProductManagementView({
 
       {/* Content: Products & Low Stock */}
       {(selectedTab === 'products' || selectedTab === 'low-stock') && (
-        <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden shadow-xs">
+        <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden smooth-card-static">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-[#F9F9F9] text-[#8B8B8B] uppercase tracking-wider font-bold border-b border-[#E5E7EB]">
@@ -276,7 +276,7 @@ export function ProductManagementView({
           {filteredCategories.map((c) => (
             <div
               key={c.id}
-              className="p-4 bg-white rounded-2xl border border-[#E5E7EB] flex items-center justify-between shadow-xs"
+              className="p-4 bg-white rounded-2xl border border-[#E5E7EB] flex items-center justify-between smooth-card"
             >
               <div>
                 <div className="font-bold text-sm text-[#1E1E1E]">{c.name}</div>
@@ -294,7 +294,7 @@ export function ProductManagementView({
 
       {/* Content: Logs Tab */}
       {selectedTab === 'logs' && (
-        <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden shadow-xs">
+        <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden smooth-card-static">
           <div className="p-4 border-b border-[#E5E7EB]">
             <h3 className="font-bold text-sm text-[#1E1E1E]">Riwayat Pergerakan Stok Terbaru</h3>
           </div>

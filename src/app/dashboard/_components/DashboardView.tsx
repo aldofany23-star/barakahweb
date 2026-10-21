@@ -89,7 +89,7 @@ export function DashboardView({ orders, products }: DashboardViewProps) {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] smooth-card">
           <div className="text-xs font-medium text-[#8B8B8B] mb-1">Total Omset</div>
           <div className="text-lg sm:text-xl font-black text-[#00A250]">
             {formatRupiah(stats.totalRevenue)}
@@ -97,7 +97,7 @@ export function DashboardView({ orders, products }: DashboardViewProps) {
           <div className="text-[10px] text-[#8B8B8B] mt-1">Akumulasi pendapatan</div>
         </div>
 
-        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] smooth-card">
           <div className="text-xs font-medium text-[#8B8B8B] mb-1">Total Transaksi</div>
           <div className="text-lg sm:text-xl font-black text-[#1E1E1E]">
             {stats.totalTransactions} struk
@@ -105,7 +105,7 @@ export function DashboardView({ orders, products }: DashboardViewProps) {
           <div className="text-[10px] text-[#8B8B8B] mt-1">Order selesai</div>
         </div>
 
-        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] smooth-card">
           <div className="text-xs font-medium text-[#8B8B8B] mb-1">Rata-Rata Keranjang</div>
           <div className="text-lg sm:text-xl font-black text-[#1E1E1E]">
             {formatRupiah(stats.averageOrderValue)}
@@ -113,7 +113,7 @@ export function DashboardView({ orders, products }: DashboardViewProps) {
           <div className="text-[10px] text-[#8B8B8B] mt-1">Nilai per pelanggan</div>
         </div>
 
-        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] smooth-card">
           <div className="text-xs font-medium text-[#8B8B8B] mb-1">Stok Menipis</div>
           <div className="text-lg sm:text-xl font-black text-[#EF4444]">
             {stats.lowStockProducts.length} produk
@@ -125,7 +125,7 @@ export function DashboardView({ orders, products }: DashboardViewProps) {
       {/* 7-Day Sales Trend & Payment Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Sales Chart Bar */}
-        <div className="lg:col-span-2 p-5 sm:p-6 bg-white rounded-3xl border border-[#E5E7EB] shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 p-5 sm:p-6 bg-white rounded-3xl border border-[#E5E7EB] smooth-card-static flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="font-bold text-sm text-[#1E1E1E]">
@@ -156,7 +156,7 @@ export function DashboardView({ orders, products }: DashboardViewProps) {
         </div>
 
         {/* Payment Breakdown */}
-        <div className="p-5 sm:p-6 bg-white rounded-3xl border border-[#E5E7EB] shadow-xs flex flex-col justify-between">
+        <div className="p-5 sm:p-6 bg-white rounded-3xl border border-[#E5E7EB] smooth-card-static flex flex-col justify-between">
           <div>
             <h2 className="font-bold text-sm text-[#1E1E1E] mb-1">
               Metode Pembayaran

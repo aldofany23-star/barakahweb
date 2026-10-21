@@ -57,7 +57,7 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
         )}
 
         {/* Profil Toko Card */}
-        <div className="p-6 bg-white rounded-3xl border border-[#E5E7EB] space-y-4 shadow-xs">
+        <div className="p-6 bg-white rounded-3xl border border-[#E5E7EB] space-y-4 smooth-card-static">
           <div className="flex items-center gap-2 font-bold text-sm text-[#1E1E1E] border-b border-[#E5E7EB] pb-3">
             <Store className="w-4 h-4 text-[#00A250]" />
             <span>Identitas Toko (Header Struk Thermal)</span>
@@ -131,7 +131,7 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
         </div>
 
         {/* Info Rekening & Pembayaran Card */}
-        <div className="p-6 bg-white rounded-3xl border border-[#E5E7EB] space-y-4 shadow-xs">
+        <div className="p-6 bg-white rounded-3xl border border-[#E5E7EB] space-y-4 smooth-card-static">
           <div className="flex items-center gap-2 font-bold text-sm text-[#1E1E1E] border-b border-[#E5E7EB] pb-3">
             <CreditCard className="w-4 h-4 text-[#00A250]" />
             <span>Rekening & Pembayaran Non-Tunai</span>

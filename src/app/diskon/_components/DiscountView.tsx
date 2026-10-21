@@ -97,7 +97,7 @@ export function DiscountView({ initialDiscounts, products }: DiscountViewProps) 
       </div>
 
       {/* Discount List Card */}
-      <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden shadow-xs">
+      <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden smooth-card-static">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#F9F9F9] text-[#8B8B8B] uppercase tracking-wider font-bold border-b border-[#E5E7EB]">
