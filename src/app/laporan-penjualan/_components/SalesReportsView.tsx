@@ -7,13 +7,11 @@ import { formatRupiah, formatDateTime } from '@/lib/utils'
 import {
   Receipt,
   Search,
-  Calendar,
   DollarSign,
   CreditCard,
   Banknote,
   Download,
   Eye,
-  TrendingUp,
 } from 'lucide-react'
 
 interface SalesReportsViewProps {
@@ -112,201 +110,166 @@ export function SalesReportsView({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <Receipt className="w-6 h-6 text-emerald-600" />
-            <span>Laporan Penjualan & Transaksi</span>
+          <h1 className="text-2xl font-black text-[#1E1E1E] tracking-tight">
+            Laporan Penjualan
           </h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Riwayat seluruh struk transaksi kasir, filter periode, dan ekspor data penjualan
+          <p className="text-xs text-[#8B8B8B] mt-0.5">
+            Riwayat struk transaksi, filter periode, dan rekap pendapatan
           </p>
         </div>
 
         <button
           onClick={handleExportCsv}
           disabled={filteredOrders.length === 0}
-          className="px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 rounded-xl text-xs font-semibold shadow-sm flex items-center gap-1.5 transition cursor-pointer"
+          className="px-5 py-2.5 bg-white border border-[#E5E7EB] hover:bg-[#F9F9F9] text-[#1E1E1E] rounded-full text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs self-stretch sm:self-auto justify-center"
         >
-          <Download className="w-4 h-4 text-emerald-600" />
+          <Download className="w-4 h-4 text-[#00A250]" />
           <span>Ekspor CSV / Excel</span>
         </button>
       </div>
 
-      {/* Metric Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-500 text-xs mb-1">
-            <span>Total Omset</span>
-            <DollarSign className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="text-lg font-extrabold text-emerald-600">
+      {/* KPI Cards (Clean White Surface, Border #E5E7EB) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+          <div className="text-xs font-medium text-[#8B8B8B] mb-1">Total Omset</div>
+          <div className="text-lg sm:text-xl font-black text-[#00A250]">
             {formatRupiah(metrics.totalOmset)}
           </div>
-          <div className="text-[10px] text-zinc-400 mt-1">
-            Dari {metrics.count} transaksi
-          </div>
+          <div className="text-[10px] text-[#8B8B8B] mt-1">{metrics.count} transaksi</div>
         </div>
 
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-500 text-xs mb-1">
-            <span>Total Transaksi</span>
-            <Receipt className="w-4 h-4 text-blue-600" />
-          </div>
-          <div className="text-lg font-extrabold text-zinc-900 dark:text-zinc-100">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+          <div className="text-xs font-medium text-[#8B8B8B] mb-1">Total Transaksi</div>
+          <div className="text-lg sm:text-xl font-black text-[#1E1E1E]">
             {metrics.count} struk
           </div>
-          <div className="text-[10px] text-zinc-400 mt-1">
-            Rata-rata: {formatRupiah(metrics.avg)}
-          </div>
+          <div className="text-[10px] text-[#8B8B8B] mt-1">Rata-rata: {formatRupiah(metrics.avg)}</div>
         </div>
 
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-500 text-xs mb-1">
-            <span>Pendapatan Tunai</span>
-            <Banknote className="w-4 h-4 text-amber-600" />
-          </div>
-          <div className="text-lg font-extrabold text-zinc-900 dark:text-zinc-100">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+          <div className="text-xs font-medium text-[#8B8B8B] mb-1">Uang Tunai (Cash)</div>
+          <div className="text-lg sm:text-xl font-black text-[#1E1E1E]">
             {formatRupiah(metrics.cashRevenue)}
           </div>
-          <div className="text-[10px] text-zinc-400 mt-1">Metode Cash di kasir</div>
+          <div className="text-[10px] text-[#8B8B8B] mt-1">Laci kasir</div>
         </div>
 
-        <div className="p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <div className="flex items-center justify-between text-zinc-500 text-xs mb-1">
-            <span>Non-Tunai (QRIS/Bank)</span>
-            <CreditCard className="w-4 h-4 text-purple-600" />
-          </div>
-          <div className="text-lg font-extrabold text-zinc-900 dark:text-zinc-100">
+        <div className="p-4 sm:p-5 bg-white rounded-2xl border border-[#E5E7EB] shadow-xs">
+          <div className="text-xs font-medium text-[#8B8B8B] mb-1">QRIS & Transfer</div>
+          <div className="text-lg sm:text-xl font-black text-[#1E1E1E]">
             {formatRupiah(metrics.nonCashRevenue)}
           </div>
-          <div className="text-[10px] text-zinc-400 mt-1">QRIS & Transfer rekening</div>
+          <div className="text-[10px] text-[#8B8B8B] mt-1">Rekening bank / QRIS</div>
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-3 text-zinc-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari No. Order, nama kasir, atau meja..."
-            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-          />
-        </div>
+      {/* iOS Segmented Tabs */}
+      <div className="ios-segmented-container">
+        <button
+          onClick={() => setDateFilter('today')}
+          className={`ios-segmented-tab ${dateFilter === 'today' ? 'ios-segmented-tab-active' : ''}`}
+        >
+          Hari Ini
+        </button>
+        <button
+          onClick={() => setDateFilter('7days')}
+          className={`ios-segmented-tab ${dateFilter === '7days' ? 'ios-segmented-tab-active' : ''}`}
+        >
+          7 Hari
+        </button>
+        <button
+          onClick={() => setDateFilter('30days')}
+          className={`ios-segmented-tab ${dateFilter === '30days' ? 'ios-segmented-tab-active' : ''}`}
+        >
+          30 Hari
+        </button>
+        <button
+          onClick={() => setDateFilter('all')}
+          className={`ios-segmented-tab ${dateFilter === 'all' ? 'ios-segmented-tab-active' : ''}`}
+        >
+          Semua
+        </button>
+      </div>
 
-        {/* Date Filter Tabs */}
-        <div className="flex rounded-xl border border-zinc-200 dark:border-zinc-800 p-0.5 bg-zinc-50 dark:bg-zinc-900 text-xs font-medium">
-          <button
-            onClick={() => setDateFilter('today')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              dateFilter === 'today'
-                ? 'bg-white dark:bg-zinc-800 shadow-sm font-semibold text-emerald-600'
-                : 'text-zinc-500 hover:text-zinc-800'
-            }`}
-          >
-            Hari Ini
-          </button>
-          <button
-            onClick={() => setDateFilter('7days')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              dateFilter === '7days'
-                ? 'bg-white dark:bg-zinc-800 shadow-sm font-semibold text-emerald-600'
-                : 'text-zinc-500 hover:text-zinc-800'
-            }`}
-          >
-            7 Hari Terakhir
-          </button>
-          <button
-            onClick={() => setDateFilter('30days')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              dateFilter === '30days'
-                ? 'bg-white dark:bg-zinc-800 shadow-sm font-semibold text-emerald-600'
-                : 'text-zinc-500 hover:text-zinc-800'
-            }`}
-          >
-            30 Hari Terakhir
-          </button>
-          <button
-            onClick={() => setDateFilter('all')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              dateFilter === 'all'
-                ? 'bg-white dark:bg-zinc-800 shadow-sm font-semibold text-emerald-600'
-                : 'text-zinc-500 hover:text-zinc-800'
-            }`}
-          >
-            Semua
-          </button>
-        </div>
+      {/* iOS Search Box */}
+      <div className="relative">
+        <Search className="w-5 h-5 absolute left-4 top-3.5 text-[#8B8B8B]" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari No. Order, nama kasir, atau meja..."
+          className="w-full pl-11 pr-4 py-3 bg-[#E5E5EA] border-0 rounded-full text-sm text-[#1E1E1E] placeholder:text-[#8B8B8B] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
+        />
       </div>
 
       {/* Orders Table */}
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-zinc-50 dark:bg-zinc-800/60 text-zinc-500 uppercase tracking-wider font-semibold border-b border-zinc-100 dark:border-zinc-800">
+            <thead className="bg-[#F9F9F9] text-[#8B8B8B] uppercase tracking-wider font-bold border-b border-[#E5E7EB]">
               <tr>
-                <th className="py-3 px-4">No. Order</th>
-                <th className="py-3 px-4">Waktu Transaksi</th>
-                <th className="py-3 px-4">Kasir</th>
-                <th className="py-3 px-4">Catatan/Meja</th>
-                <th className="py-3 px-4">Metode</th>
-                <th className="py-3 px-4">Diskon</th>
-                <th className="py-3 px-4 font-bold">Total</th>
-                <th className="py-3 px-4 text-right">Aksi</th>
+                <th className="py-3.5 px-4">No. Order</th>
+                <th className="py-3.5 px-4">Waktu</th>
+                <th className="py-3.5 px-4">Kasir</th>
+                <th className="py-3.5 px-4">Catatan</th>
+                <th className="py-3.5 px-4">Metode</th>
+                <th className="py-3.5 px-4">Diskon</th>
+                <th className="py-3.5 px-4 font-bold">Total</th>
+                <th className="py-3.5 px-4 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <tbody className="divide-y divide-[#E5E7EB]">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-zinc-400">
+                  <td colSpan={8} className="py-12 text-center text-[#8B8B8B]">
                     Tidak ada transaksi pada filter periode ini
                   </td>
                 </tr>
               ) : (
                 filteredOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 transition">
-                    <td className="py-3 px-4 font-bold text-zinc-900 dark:text-zinc-100 font-mono">
+                  <tr key={order.id} className="hover:bg-[#F9F9F9] transition">
+                    <td className="py-3.5 px-4 font-bold text-[#1E1E1E]">
                       {order.order_number}
                     </td>
-                    <td className="py-3 px-4 text-zinc-500 whitespace-nowrap">
+                    <td className="py-3.5 px-4 text-[#8B8B8B] whitespace-nowrap">
                       {formatDateTime(order.created_at)}
                     </td>
-                    <td className="py-3 px-4 text-zinc-700 dark:text-zinc-300">
+                    <td className="py-3.5 px-4 text-[#1E1E1E]">
                       {order.cashier_name || 'Staff'}
                     </td>
-                    <td className="py-3 px-4 text-zinc-400">
+                    <td className="py-3.5 px-4 text-[#8B8B8B]">
                       {order.table_number || '-'}
                     </td>
-                    <td className="py-3 px-4">
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                    <td className="py-3.5 px-4">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-[#E5E5EA] text-[#1E1E1E]">
                         {order.payment_method}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-zinc-500">
+                    <td className="py-3.5 px-4 text-[#8B8B8B]">
                       {order.custom_discount > 0 ? (
-                        <span className="text-emerald-600 font-medium">
+                        <span className="text-[#EF4444] font-bold">
                           -{formatRupiah(order.custom_discount)}
                         </span>
                       ) : (
                         '-'
                       )}
                     </td>
-                    <td className="py-3 px-4 font-bold text-emerald-600">
+                    <td className="py-3.5 px-4 font-extrabold text-[#00A250]">
                       {formatRupiah(order.total)}
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={() => setSelectedOrder(order)}
                         title="Lihat & Cetak Struk"
-                        className="px-2.5 py-1 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg text-xs font-semibold flex items-center gap-1 ml-auto transition cursor-pointer"
+                        className="px-3 py-1.5 bg-[#E5E5EA] hover:bg-[#d8d8de] text-[#1E1E1E] rounded-full text-xs font-bold inline-flex items-center gap-1 transition cursor-pointer"
                       >
                         <Eye className="w-3.5 h-3.5" />
-                        <span>Detail</span>
+                        <span>Struk</span>
                       </button>
                     </td>
                   </tr>
@@ -317,7 +280,7 @@ export function SalesReportsView({
         </div>
       </div>
 
-      {/* Order Detail & Reprint Modal */}
+      {/* Order Detail Modal */}
       <OrderDetailModal
         order={selectedOrder}
         storeProfile={storeProfile}

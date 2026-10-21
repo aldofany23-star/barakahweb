@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react'
 import { StoreProfile } from '@/types/database'
 import { updateStoreProfileAction } from '../_actions/settingActions'
-import { Settings, Store, QrCode, CreditCard, Save, Loader2, CheckCircle2 } from 'lucide-react'
+import { Settings, Store, CreditCard, Save, Loader2, CheckCircle2 } from 'lucide-react'
 
 interface StoreSettingsViewProps {
   initialProfile: StoreProfile | null
@@ -32,41 +32,40 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
   }
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-5 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-          <Settings className="w-6 h-6 text-emerald-600" />
-          <span>Pengaturan Toko & Struk Kasir</span>
+        <h1 className="text-2xl font-black text-[#1E1E1E] tracking-tight">
+          Pengaturan Toko & Struk
         </h1>
-        <p className="text-xs text-zinc-500 mt-1">
-          Identitas toko untuk header struk thermal, informasi rekening, dan QRIS statis
+        <p className="text-xs text-[#8B8B8B] mt-0.5">
+          Identitas toko untuk cetak struk kasir, rekening pembayaran, dan QRIS
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 text-xs">
+      <form onSubmit={handleSubmit} className="space-y-5 text-xs">
         {success && (
-          <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/40 rounded-2xl flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
+          <div className="p-4 bg-[#D6F0E0] border border-[#B2E4C4] rounded-2xl flex items-center gap-2 text-[#00A250] font-bold">
             <CheckCircle2 className="w-5 h-5 shrink-0" />
-            <span>Pengaturan berhasil diperbarui dan tersinkronisasi ke seluruh kasir!</span>
+            <span>Pengaturan berhasil disimpan dan langsung tersinkronisasi ke seluruh kasir!</span>
           </div>
         )}
 
         {error && (
-          <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 rounded-2xl text-red-600 dark:text-red-400">
+          <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600">
             {error}
           </div>
         )}
 
-        {/* Section 1: Profil Toko */}
-        <div className="p-6 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm">
-          <div className="flex items-center gap-2 font-bold text-sm text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-3">
-            <Store className="w-4 h-4 text-emerald-600" />
-            <span>Identitas Toko (Tampil di Struk)</span>
+        {/* Profil Toko Card */}
+        <div className="p-6 bg-white rounded-3xl border border-[#E5E7EB] space-y-4 shadow-xs">
+          <div className="flex items-center gap-2 font-bold text-sm text-[#1E1E1E] border-b border-[#E5E7EB] pb-3">
+            <Store className="w-4 h-4 text-[#00A250]" />
+            <span>Identitas Toko (Header Struk Thermal)</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+              <label className="block font-bold text-[#1E1E1E] mb-1.5">
                 Nama Toko *
               </label>
               <input
@@ -74,50 +73,50 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
                 name="storeName"
                 required
                 defaultValue={initialProfile?.store_name || 'Barakah Fauna'}
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-4 py-2.5 bg-[#F9F9F9] border border-[#E5E7EB] rounded-xl text-xs text-[#1E1E1E] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+              <label className="block font-bold text-[#1E1E1E] mb-1.5">
                 Tagline Toko
               </label>
               <input
                 type="text"
                 name="tagline"
                 defaultValue={initialProfile?.tagline || 'Petshop & Grooming'}
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-4 py-2.5 bg-[#F9F9F9] border border-[#E5E7EB] rounded-xl text-xs text-[#1E1E1E] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+            <label className="block font-bold text-[#1E1E1E] mb-1.5">
               Alamat Lengkap Toko
             </label>
             <input
               type="text"
               name="address"
               defaultValue={initialProfile?.address || 'Perum. Jaya Regency Sedati'}
-              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="w-full px-4 py-2.5 bg-[#F9F9F9] border border-[#E5E7EB] rounded-xl text-xs text-[#1E1E1E] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+              <label className="block font-bold text-[#1E1E1E] mb-1.5">
                 Nomor WhatsApp Toko
               </label>
               <input
                 type="text"
                 name="whatsapp"
                 defaultValue={initialProfile?.whatsapp || '085707601606'}
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-4 py-2.5 bg-[#F9F9F9] border border-[#E5E7EB] rounded-xl text-xs text-[#1E1E1E] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+              <label className="block font-bold text-[#1E1E1E] mb-1.5">
                 Instagram
               </label>
               <input
@@ -125,22 +124,22 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
                 name="instagram"
                 defaultValue={initialProfile?.instagram || ''}
                 placeholder="@barakahfauna"
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-4 py-2.5 bg-[#F9F9F9] border border-[#E5E7EB] rounded-xl text-xs text-[#1E1E1E] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
               />
             </div>
           </div>
         </div>
 
-        {/* Section 2: Info Rekening & Pembayaran Non-Tunai */}
-        <div className="p-6 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 space-y-4 shadow-sm">
-          <div className="flex items-center gap-2 font-bold text-sm text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 pb-3">
-            <CreditCard className="w-4 h-4 text-purple-600" />
-            <span>Informasi Pembayaran Kasir</span>
+        {/* Info Rekening & Pembayaran Card */}
+        <div className="p-6 bg-white rounded-3xl border border-[#E5E7EB] space-y-4 shadow-xs">
+          <div className="flex items-center gap-2 font-bold text-sm text-[#1E1E1E] border-b border-[#E5E7EB] pb-3">
+            <CreditCard className="w-4 h-4 text-[#00A250]" />
+            <span>Rekening & Pembayaran Non-Tunai</span>
           </div>
 
           <div>
-            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-              Info Rekening Transfer Bank
+            <label className="block font-bold text-[#1E1E1E] mb-1.5">
+              Informasi Rekening Bank Transfer
             </label>
             <input
               type="text"
@@ -149,12 +148,12 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
                 initialProfile?.bank_account_info ||
                 'BCA 4650557081 ALDO FANNY EKA ADITYA RAHMAT'
               }
-              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono"
+              className="w-full px-4 py-2.5 bg-[#F9F9F9] border border-[#E5E7EB] rounded-xl text-xs font-mono text-[#1E1E1E] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+            <label className="block font-bold text-[#1E1E1E] mb-1.5">
               URL Gambar QRIS (Supabase Storage / Public Link)
             </label>
             <input
@@ -162,7 +161,7 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
               name="qrisImageUrl"
               defaultValue={initialProfile?.qris_image_url || ''}
               placeholder="https://.../qris.jpeg"
-              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none font-mono"
+              className="w-full px-4 py-2.5 bg-[#F9F9F9] border border-[#E5E7EB] rounded-xl text-xs font-mono text-[#1E1E1E] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
             />
           </div>
         </div>
@@ -171,14 +170,14 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-50 text-white font-semibold rounded-xl shadow-md flex items-center gap-2 transition cursor-pointer"
+            className="w-full sm:w-auto px-8 py-3 bg-[#00A250] hover:bg-[#008f46] active:bg-[#007a3c] disabled:opacity-50 text-white font-bold rounded-full text-xs shadow-xs flex items-center justify-center gap-2 transition cursor-pointer"
           >
             {isPending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
               <Save className="w-4 h-4" />
             )}
-            <span>Simpan Pengaturan Toko</span>
+            <span>Simpan Pengaturan</span>
           </button>
         </div>
       </form>

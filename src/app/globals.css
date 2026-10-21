@@ -15,16 +15,54 @@
   --danger-light: #FEE2E2;
 }
 
-body {
-  background: var(--background);
-  color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+/* San Francisco iOS Font Family */
+* {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Custom scrollbar for POS view */
+body {
+  background-color: #F9F9F9;
+  color: #1E1E1E;
+  letter-spacing: -0.01em;
+}
+
+/* iOS Segmented Control Styles */
+.ios-segmented-container {
+  background-color: #E5E5EA;
+  border-radius: 9999px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.ios-segmented-tab {
+  flex: 1;
+  height: 36px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #8B8B8B;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.ios-segmented-tab-active {
+  background-color: #FFFFFF;
+  color: #1E1E1E;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;

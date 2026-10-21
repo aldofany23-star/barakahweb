@@ -7,7 +7,8 @@ import { CartSidebar } from './CartSidebar'
 import { CheckoutModal } from './CheckoutModal'
 import { ReceiptModal } from './ReceiptModal'
 import { createClient } from '@/lib/supabase/client'
-import { AlertCircle } from 'lucide-react'
+import { formatRupiah } from '@/lib/utils'
+import { AlertCircle, ShoppingCart, ArrowRight } from 'lucide-react'
 
 interface CashierViewProps {
   initialProducts: Product[]
@@ -31,7 +32,10 @@ export function CashierView({
   const [lastCompletedOrder, setLastCompletedOrder] = useState<Order | null>(null)
   const [lastReceiptItems, setLastReceiptItems] = useState<CartItem[]>([])
 
-  // Setup Supabase Realtime agar stok terupdate jika kasir di Android menjual barang
+  // Mobile / Tablet Tab Switcher (Matches line 70 CashierScreen.kt: ["Produk", "Keranjang"])
+  const [mobileTab, setMobileTab] = useState<'products' | 'cart'>('products')
+
+  // Setup Supabase Realtime
   useEffect(() => {
     const supabase = createClient()
     const channel = supabase
@@ -61,6 +65,7 @@ export function CashierView({
   // Kalkulasi total
   const subtotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0)
   const grandTotal = Math.max(0, subtotal - customDiscount)
+  const totalItemCount = cartItems.reduce((sum, item) => sum + item.qty, 0)
 
   // Handlers Keranjang
   const handleAddToCart = (product: Product, discount?: Discount) => {
@@ -145,46 +150,101 @@ export function CashierView({
     setLastCompletedOrder(order)
     setIsCheckoutOpen(false)
     handleClearCart()
+    setMobileTab('products')
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-6rem)]">
+    <div className="flex flex-col min-h-[calc(100vh-6rem)]">
       {/* Alert jika shift belum aktif */}
       {!currentShift && (
-        <div className="mb-4 p-3.5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between text-xs text-amber-800">
+        <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between text-xs text-amber-800">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
-              <b>Shift Belum Aktif:</b> Buka sesi shift kasir terlebih dahulu pada tombol hijau di pojok kanan atas untuk memproses transaksi.
+              <b>Shift Belum Aktif:</b> Buka shift kasir terlebih dahulu pada tombol di pojok kanan atas untuk transaksi.
             </span>
           </div>
         </div>
       )}
 
+      {/* Mobile & Tablet Segmented Tab Switcher (Matches lines 76-96 CashierScreen.kt) */}
+      <div className="xl:hidden mb-4">
+        <div className="ios-segmented-container">
+          <button
+            onClick={() => setMobileTab('products')}
+            className={`ios-segmented-tab ${mobileTab === 'products' ? 'ios-segmented-tab-active' : ''}`}
+          >
+            Produk
+          </button>
+          <button
+            onClick={() => setMobileTab('cart')}
+            className={`ios-segmented-tab flex items-center gap-2 ${mobileTab === 'cart' ? 'ios-segmented-tab-active' : ''}`}
+          >
+            <span>Keranjang</span>
+            {totalItemCount > 0 && (
+              <span className="w-5 h-5 rounded-full bg-red-600 text-white text-[11px] font-bold flex items-center justify-center">
+                {totalItemCount}
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+
       {/* Main Cashier Layout */}
       <div className="flex-1 flex flex-col xl:flex-row gap-6 min-h-0">
-        <ProductGrid
-          products={products}
-          categories={categories}
-          discounts={discounts}
-          cartItems={cartItems}
-          onAddToCart={handleAddToCart}
-          onUpdateCartQty={handleUpdateQty}
-        />
+        {/* Catalog Grid */}
+        <div className={`flex-1 ${mobileTab === 'products' ? 'block' : 'hidden xl:block'}`}>
+          <ProductGrid
+            products={products}
+            categories={categories}
+            discounts={discounts}
+            cartItems={cartItems}
+            onAddToCart={handleAddToCart}
+            onUpdateCartQty={handleUpdateQty}
+          />
+        </div>
 
-        <CartSidebar
-          items={cartItems}
-          subtotal={subtotal}
-          customDiscount={customDiscount}
-          total={grandTotal}
-          onUpdateQty={handleUpdateQty}
-          onRemoveItem={handleRemoveItem}
-          onClearCart={handleClearCart}
-          onSetCustomDiscount={setCustomDiscount}
-          onCheckout={() => setIsCheckoutOpen(true)}
-          isShiftActive={!!currentShift}
-        />
+        {/* Cart Sidebar */}
+        <div className={`xl:w-[380px] ${mobileTab === 'cart' ? 'block' : 'hidden xl:block'}`}>
+          <CartSidebar
+            items={cartItems}
+            subtotal={subtotal}
+            customDiscount={customDiscount}
+            total={grandTotal}
+            onUpdateQty={handleUpdateQty}
+            onRemoveItem={handleRemoveItem}
+            onClearCart={handleClearCart}
+            onSetCustomDiscount={setCustomDiscount}
+            onCheckout={() => setIsCheckoutOpen(true)}
+            isShiftActive={!!currentShift}
+          />
+        </div>
       </div>
+
+      {/* Mobile Floating Quick Cart Bar (Visible on mobile when in "products" tab and cart has items) */}
+      {mobileTab === 'products' && totalItemCount > 0 && (
+        <div className="xl:hidden fixed bottom-18 left-4 right-4 z-30">
+          <button
+            onClick={() => setMobileTab('cart')}
+            className="w-full bg-[#00A250] hover:bg-[#008f46] text-white p-3.5 rounded-2xl shadow-xl flex items-center justify-between cursor-pointer transition active:scale-[0.98]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-xs">
+                {totalItemCount}
+              </div>
+              <div className="text-left">
+                <div className="text-[10px] text-white/80 uppercase font-bold tracking-wider">Keranjang Pesanan</div>
+                <div className="text-sm font-black">{formatRupiah(grandTotal)}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1 font-bold text-xs bg-white text-[#00A250] px-3.5 py-1.5 rounded-full">
+              <span>Buka Keranjang</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </button>
+        </div>
+      )}
 
       {/* Checkout Modal */}
       <CheckoutModal

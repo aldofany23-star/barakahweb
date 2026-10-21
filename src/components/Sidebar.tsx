@@ -15,6 +15,7 @@ import {
   Settings,
   ChevronLeft,
   Menu,
+  X,
 } from 'lucide-react'
 
 interface MenuItem {
@@ -43,7 +44,6 @@ export function Sidebar({ session }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  // Filter menu berdasarkan hak akses akun (persis seperti di Android MainDashboardScreen.kt)
   const allowedMenus = ALL_MENUS.filter((item) => {
     if (!session) return false
     if (session.role === 'owner') return true
@@ -54,35 +54,61 @@ export function Sidebar({ session }: SidebarProps) {
     return menuAccess.some((m) => m.toLowerCase() === item.name.toLowerCase())
   })
 
+  // Quick bottom bar items for mobile
+  const bottomBarMenus = allowedMenus.slice(0, 4)
+
   return (
     <>
-      {/* Mobile Toggle Button */}
-      <button
-        onClick={() => setMobileOpen(!mobileOpen)}
-        className="lg:hidden fixed bottom-5 right-5 z-50 p-3.5 bg-[#00A250] text-white rounded-full shadow-xl hover:bg-[#008f46]"
-      >
-        <Menu className="w-6 h-6" />
-      </button>
+      {/* Mobile Bottom Navigation Bar (iOS App Style) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E5E7EB] px-3 py-1.5 flex items-center justify-around shadow-lg">
+        {bottomBarMenus.map((item) => {
+          const Icon = item.icon
+          const isActive = pathname.startsWith(item.href)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center py-1 px-2 rounded-xl transition ${
+                isActive ? 'text-[#00A250]' : 'text-[#8B8B8B] hover:text-[#1E1E1E]'
+              }`}
+            >
+              <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : 'stroke-2'}`} />
+              <span className={`text-[10px] mt-0.5 ${isActive ? 'font-bold' : 'font-medium'}`}>
+                {item.name.split(' ')[0]}
+              </span>
+            </Link>
+          )
+        })}
 
-      {/* Backdrop for mobile */}
+        {/* Menu Drawer Toggle Button */}
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="flex flex-col items-center py-1 px-2 rounded-xl text-[#8B8B8B] hover:text-[#1E1E1E] cursor-pointer"
+        >
+          <Menu className="w-5 h-5 stroke-2" />
+          <span className="text-[10px] font-medium mt-0.5">Lainnya</span>
+        </button>
+      </div>
+
+      {/* Backdrop for mobile drawer */}
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 lg:hidden transition-opacity"
         />
       )}
 
-      {/* Sidebar container */}
+      {/* Sidebar Desktop / Sliding Drawer Mobile */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 z-40 h-screen bg-white border-r border-[#E5E7EB] flex flex-col transition-all duration-300 ${
+        className={`fixed top-0 left-0 z-50 h-screen bg-white border-r border-[#E5E7EB] flex flex-col transition-all duration-300 lg:sticky lg:z-40 ${
           isCollapsed ? 'w-20' : 'w-64'
-        } ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+        } ${mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}`}
       >
-        {/* Brand / Logo (Matches Android: "Barakah Fauna" 22sp ExtraBold #00A250) */}
+        {/* Brand / Logo */}
         <div className="h-16 px-6 border-b border-[#E5E7EB] flex items-center justify-between">
           <Link href="/kasir" className="flex items-center gap-2.5 overflow-hidden">
             {!isCollapsed ? (
-              <span className="text-xl font-extrabold text-[#00A250] tracking-tight">
+              <span className="text-xl font-black text-[#00A250] tracking-tight">
                 Barakah Fauna
               </span>
             ) : (
@@ -90,11 +116,20 @@ export function Sidebar({ session }: SidebarProps) {
             )}
           </Link>
 
+          {/* Desktop Collapse Toggle */}
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="hidden lg:flex p-1.5 text-[#8B8B8B] hover:text-[#1E1E1E] hover:bg-[#F9F9F9] rounded-lg transition"
           >
             <ChevronLeft className={`w-4 h-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} />
+          </button>
+
+          {/* Mobile Close Button */}
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="lg:hidden p-1.5 text-[#8B8B8B] hover:text-[#1E1E1E] hover:bg-[#F9F9F9] rounded-lg"
+          >
+            <X className="w-5 h-5" />
           </button>
         </div>
 

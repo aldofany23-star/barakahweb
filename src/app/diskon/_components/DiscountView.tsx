@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useMemo } from 'react'
 import { Discount, Product } from '@/types/database'
 import { DiscountModal } from './DiscountModal'
 import { toggleDiscountAction, deleteDiscountAction } from '../_actions/discountActions'
 import { formatRupiah, formatDateOnly } from '@/lib/utils'
-import { Percent, Plus, Tag, Trash2, Power, AlertCircle } from 'lucide-react'
+import { Plus, Tag, Trash2, Power, Search } from 'lucide-react'
 
 interface DiscountViewProps {
   initialDiscounts: (Discount & { product?: Product | null })[]
@@ -13,6 +13,8 @@ interface DiscountViewProps {
 }
 
 export function DiscountView({ initialDiscounts, products }: DiscountViewProps) {
+  const [selectedTab, setSelectedTab] = useState<'active' | 'all'>('active')
+  const [search, setSearch] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -30,89 +32,132 @@ export function DiscountView({ initialDiscounts, products }: DiscountViewProps) 
     }
   }
 
+  const filteredDiscounts = useMemo(() => {
+    return initialDiscounts.filter((d) => {
+      if (selectedTab === 'active' && !d.is_active) return false
+      const q = search.toLowerCase().trim()
+      if (!q) return true
+      return (
+        d.name.toLowerCase().includes(q) ||
+        (d.product?.name && d.product.name.toLowerCase().includes(q))
+      )
+    })
+  }, [initialDiscounts, selectedTab, search])
+
+  const activeCount = initialDiscounts.filter((d) => d.is_active).length
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-5 max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-            <Percent className="w-6 h-6 text-emerald-600" />
-            <span>Setup Diskon & Promo</span>
+          <h1 className="text-2xl font-black text-[#1E1E1E] tracking-tight">
+            Setup Diskon & Bundling
           </h1>
-          <p className="text-xs text-zinc-500 mt-1">
-            Konfigurasi promo potongan harga nominal (Rp) atau persentase (%) per produk
+          <p className="text-xs text-[#8B8B8B] mt-0.5">
+            Kelola potongan harga promosi nominal (Rp) atau persentase (%)
           </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm flex items-center gap-1.5 transition cursor-pointer"
+          className="px-5 py-2.5 bg-[#00A250] hover:bg-[#008f46] text-white rounded-full text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-xs self-stretch sm:self-auto justify-center"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Diskon</span>
         </button>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
+      {/* iOS Segmented Control Tabs */}
+      <div className="ios-segmented-container">
+        <button
+          onClick={() => setSelectedTab('active')}
+          className={`ios-segmented-tab ${selectedTab === 'active' ? 'ios-segmented-tab-active' : ''}`}
+        >
+          Diskon Aktif ({activeCount})
+        </button>
+        <button
+          onClick={() => setSelectedTab('all')}
+          className={`ios-segmented-tab ${selectedTab === 'all' ? 'ios-segmented-tab-active' : ''}`}
+        >
+          Semua Promo ({initialDiscounts.length})
+        </button>
+      </div>
+
+      {/* iOS Search Box */}
+      <div className="relative">
+        <Search className="w-5 h-5 absolute left-4 top-3.5 text-[#8B8B8B]" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Cari promo atau nama produk..."
+          className="w-full pl-11 pr-4 py-3 bg-[#E5E5EA] border-0 rounded-full text-sm text-[#1E1E1E] placeholder:text-[#8B8B8B] focus:outline-none focus:ring-2 focus:ring-[#00A250]"
+        />
+      </div>
+
+      {/* Discount List Card */}
+      <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden shadow-xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-zinc-50 dark:bg-zinc-800/60 text-zinc-500 uppercase tracking-wider font-semibold border-b border-zinc-100 dark:border-zinc-800">
+            <thead className="bg-[#F9F9F9] text-[#8B8B8B] uppercase tracking-wider font-bold border-b border-[#E5E7EB]">
               <tr>
-                <th className="py-3 px-4">Nama Promo</th>
-                <th className="py-3 px-4">Produk</th>
-                <th className="py-3 px-4">Besaran Diskon</th>
-                <th className="py-3 px-4">Periode Berlaku</th>
-                <th className="py-3 px-4 text-center">Status</th>
-                <th className="py-3 px-4 text-right">Aksi</th>
+                <th className="py-3.5 px-4">Nama Promo</th>
+                <th className="py-3.5 px-4">Produk</th>
+                <th className="py-3.5 px-4">Besaran Diskon</th>
+                <th className="py-3.5 px-4">Periode</th>
+                <th className="py-3.5 px-4 text-center">Status</th>
+                <th className="py-3.5 px-4 text-right">Aksi</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-              {initialDiscounts.length === 0 ? (
+            <tbody className="divide-y divide-[#E5E7EB]">
+              {filteredDiscounts.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-zinc-400">
-                    <Tag className="w-10 h-10 stroke-1 mx-auto mb-2 text-zinc-300 dark:text-zinc-700" />
-                    <p className="font-medium text-xs">Belum ada promo diskon yang dibuat</p>
-                    <p className="text-[11px] text-zinc-400 mt-0.5">
+                  <td colSpan={6} className="py-12 text-center text-[#8B8B8B]">
+                    <Tag className="w-10 h-10 stroke-1 mx-auto mb-2 text-[#8B8B8B]" />
+                    <p className="font-semibold text-xs text-[#1E1E1E]">Belum ada promo diskon</p>
+                    <p className="text-[11px] text-[#8B8B8B] mt-0.5">
                       Klik tombol &quot;Tambah Diskon&quot; untuk membuat promo baru
                     </p>
                   </td>
                 </tr>
               ) : (
-                initialDiscounts.map((d) => (
-                  <tr key={d.id} className="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 transition">
-                    <td className="py-3 px-4 font-semibold text-zinc-900 dark:text-zinc-100">
+                filteredDiscounts.map((d) => (
+                  <tr key={d.id} className="hover:bg-[#F9F9F9] transition">
+                    <td className="py-3.5 px-4 font-bold text-[#1E1E1E]">
                       {d.name}
                     </td>
-                    <td className="py-3 px-4 text-zinc-600 dark:text-zinc-300">
+                    <td className="py-3.5 px-4 text-[#1E1E1E]">
                       {d.product?.name || `ID: ${d.product_id}`}
                     </td>
-                    <td className="py-3 px-4 font-bold text-emerald-600">
+                    <td className="py-3.5 px-4 font-extrabold text-[#00A250]">
                       {d.type === 'percentage'
                         ? `${d.value}%`
                         : formatRupiah(d.value)}
                     </td>
-                    <td className="py-3 px-4 text-zinc-500 text-[11px]">
+                    <td className="py-3.5 px-4 text-[#8B8B8B] text-[11px]">
                       {formatDateOnly(d.start_date)} s/d {formatDateOnly(d.end_date)}
                     </td>
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-3.5 px-4 text-center">
                       <button
                         onClick={() => handleToggle(d.id, d.is_active)}
                         disabled={isPending}
-                        className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition flex items-center gap-1 mx-auto cursor-pointer ${
+                        className={`px-3 py-1 rounded-full text-[10px] font-bold transition flex items-center gap-1 mx-auto cursor-pointer ${
                           d.is_active
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400'
-                            : 'bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400'
+                            ? 'bg-[#D6F0E0] text-[#00A250]'
+                            : 'bg-[#E5E5EA] text-[#8B8B8B]'
                         }`}
                       >
                         <Power className="w-3 h-3" />
                         <span>{d.is_active ? 'Aktif' : 'Non-Aktif'}</span>
                       </button>
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3.5 px-4 text-right">
                       <button
                         onClick={() => handleDelete(d.id, d.name)}
                         disabled={isPending}
                         title="Hapus Promo"
-                        className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg transition"
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition cursor-pointer"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
