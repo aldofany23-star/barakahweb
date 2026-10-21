@@ -7,7 +7,7 @@ import { CartSidebar } from './CartSidebar'
 import { CheckoutModal } from './CheckoutModal'
 import { ReceiptModal } from './ReceiptModal'
 import { createClient } from '@/lib/supabase/client'
-import { AlertTriangle } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 
 interface CashierViewProps {
   initialProducts: Product[]
@@ -78,7 +78,6 @@ export function CashierView({
 
       if (existing) {
         const nextQty = existing.qty + 1
-        // Cegah melebihi stok yang ada
         if (nextQty > product.stock_qty) {
           alert(`Stok produk "${product.name}" hanya tersisa ${product.stock_qty}`)
           return prev
@@ -115,7 +114,6 @@ export function CashierView({
             const nextQty = it.qty + delta
             if (nextQty <= 0) return null
 
-            // Validasi stok jika bukan bundle
             if (it.product && nextQty > it.product.stock_qty) {
               alert(`Maksimal stok tercapai: ${it.product.stock_qty}`)
               return it
@@ -153,11 +151,11 @@ export function CashierView({
     <div className="flex flex-col h-[calc(100vh-6rem)]">
       {/* Alert jika shift belum aktif */}
       {!currentShift && (
-        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 rounded-xl flex items-center justify-between text-xs text-amber-800 dark:text-amber-300">
+        <div className="mb-4 p-3.5 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between text-xs text-amber-800">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
             <span>
-              <b>Shift Belum Aktif:</b> Anda perlu memulai shift terlebih dahulu untuk dapat memproses transaksi kasir.
+              <b>Shift Belum Aktif:</b> Buka sesi shift kasir terlebih dahulu pada tombol hijau di pojok kanan atas untuk memproses transaksi.
             </span>
           </div>
         </div>
@@ -169,7 +167,9 @@ export function CashierView({
           products={products}
           categories={categories}
           discounts={discounts}
+          cartItems={cartItems}
           onAddToCart={handleAddToCart}
+          onUpdateCartQty={handleUpdateQty}
         />
 
         <CartSidebar

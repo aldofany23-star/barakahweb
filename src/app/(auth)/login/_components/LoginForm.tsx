@@ -1,12 +1,10 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import { loginAction } from '../_actions/loginAction'
-import { Store, Lock, User, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 
 export function LoginForm() {
-  const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
@@ -27,65 +25,49 @@ export function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-md p-8 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800">
-      <div className="flex flex-col items-center mb-8 text-center">
-        <div className="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 mb-4">
-          <Store className="w-8 h-8 text-white" />
-        </div>
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-          BARAKAH FAUNA
-        </h1>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-          Sistem Kasir & Point of Sale (POS)
-        </p>
+    <div className="w-full max-w-[420px] bg-white rounded-2xl border border-[#E5E7EB] p-8 sm:p-10 shadow-sm">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-[#1E1E1E]">Welcome Back</h2>
+        <p className="text-sm text-[#8B8B8B] mt-2">Please log in to your account</p>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl flex items-start gap-3 text-red-700 dark:text-red-400 text-sm">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <span>{error}</span>
+        <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-xs">
+          {error}
         </div>
       )}
 
       <form method="POST" onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-            Email atau Nama Pengguna
+          <label className="block text-xs font-semibold text-[#1E1E1E] mb-1.5">
+            Email
           </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
-              <User className="w-5 h-5" />
-            </div>
-            <input
-              type="text"
-              name="identifier"
-              required
-              autoFocus
-              placeholder="Contoh: ferrin koesminarty atau barakahfauna@admin.com"
-              className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all"
-            />
-          </div>
+          <input
+            type="text"
+            name="identifier"
+            required
+            autoFocus
+            placeholder="barakahfauna@admin.com / nama staf"
+            className="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-lg text-sm text-[#1E1E1E] focus:outline-none focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] transition"
+          />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+          <label className="block text-xs font-semibold text-[#1E1E1E] mb-1.5">
             Password
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
-              <Lock className="w-5 h-5" />
-            </div>
             <input
               type={showPassword ? 'text' : 'password'}
               name="password"
               required
               placeholder="••••••••"
-              className="w-full pl-11 pr-11 py-3 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all"
+              className="w-full pl-4 pr-11 py-3 bg-white border border-[#E5E7EB] rounded-lg text-sm text-[#1E1E1E] focus:outline-none focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] transition"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#8B8B8B] hover:text-[#1E1E1E] cursor-pointer"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
@@ -95,24 +77,18 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-60 text-white font-medium rounded-xl shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+          className="w-full h-12 bg-[#00A250] hover:bg-[#008f46] active:bg-[#007a3c] disabled:opacity-60 text-white font-bold rounded-lg text-base shadow-sm transition flex items-center justify-center gap-2 cursor-pointer mt-6"
         >
           {isPending ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span>Memeriksa kredensial...</span>
+              <span>Memproses...</span>
             </>
           ) : (
-            <span>Masuk ke Sistem POS</span>
+            <span>Log in</span>
           )}
         </button>
       </form>
-
-      <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800 text-center">
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">
-          Database terhubung langsung dengan Aplikasi Android Barakah Fauna
-        </p>
-      </div>
     </div>
   )
 }

@@ -33,7 +33,7 @@ export default async function RootLayout({
 
   return (
     <html lang="id">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 min-h-screen`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F9F9F9] text-[#1E1E1E] min-h-screen`}>
         {session ? (
           <div className="flex min-h-screen">
             <Sidebar session={session} />

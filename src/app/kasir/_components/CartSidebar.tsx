@@ -2,7 +2,7 @@
 
 import { CartItem } from '@/types/database'
 import { formatRupiah } from '@/lib/utils'
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react'
+import { Plus, Minus, ShoppingCart, ArrowRight } from 'lucide-react'
 
 interface CartSidebarProps {
   items: CartItem[]
@@ -23,7 +23,6 @@ export function CartSidebar({
   customDiscount,
   total,
   onUpdateQty,
-  onRemoveItem,
   onClearCart,
   onSetCustomDiscount,
   onCheckout,
@@ -32,90 +31,79 @@ export function CartSidebar({
   const totalItemCount = items.reduce((s, it) => s + it.qty, 0)
 
   return (
-    <div className="w-full xl:w-96 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col h-full shadow-sm">
-      {/* Cart Header */}
-      <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 rounded-xl">
-            <ShoppingBag className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">Keranjang Belanja</h2>
-            <p className="text-[11px] text-zinc-500">{totalItemCount} item dipilih</p>
-          </div>
+    <div className="w-full xl:w-[380px] bg-white rounded-3xl border border-[#E5E7EB] flex flex-col h-full shadow-xs">
+      {/* Header (Matches Android: "Keranjang Pesanan" 18sp Bold) */}
+      <div className="p-5 border-b border-[#E5E7EB] flex items-center justify-between">
+        <div>
+          <h2 className="font-bold text-base text-[#1E1E1E]">Keranjang Pesanan</h2>
+          <p className="text-xs text-[#8B8B8B] mt-0.5">{totalItemCount} item dipilih</p>
         </div>
 
         {items.length > 0 && (
           <button
             onClick={onClearCart}
-            title="Kosongkan Keranjang"
-            className="p-1.5 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
+            className="text-xs text-red-500 hover:text-red-700 font-semibold cursor-pointer"
           >
-            <Trash2 className="w-4 h-4" />
+            Hapus Semua
           </button>
         )}
       </div>
 
-      {/* Cart Items List */}
-      <div className="flex-1 p-4 space-y-3 overflow-y-auto max-h-[calc(100vh-28rem)]">
+      {/* Cart Items List (Matches Android: Card surface border #E5E7EB rounded 12dp) */}
+      <div className="flex-1 p-4 space-y-2.5 overflow-y-auto max-h-[calc(100vh-26rem)]">
         {items.length === 0 ? (
-          <div className="h-64 flex flex-col items-center justify-center text-center p-6 text-zinc-400">
-            <ShoppingBag className="w-12 h-12 stroke-1 mb-2 text-zinc-300 dark:text-zinc-700" />
-            <p className="text-xs font-medium text-zinc-500">Keranjang masih kosong</p>
-            <p className="text-[11px] text-zinc-400 mt-1">Pilih produk dari daftar di samping untuk menambahkan</p>
+          <div className="h-64 flex flex-col items-center justify-center text-center p-6 text-[#8B8B8B]">
+            <ShoppingCart className="w-14 h-14 stroke-1 mb-3 text-[#8B8B8B]" />
+            <p className="text-sm font-semibold text-[#1E1E1E]">Keranjang Kosong</p>
+            <p className="text-xs text-[#8B8B8B] mt-1">
+              Pilih produk terlebih dahulu sebelum membuka keranjang
+            </p>
           </div>
         ) : (
           items.map((item) => (
             <div
               key={item.id}
-              className="p-3 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-2"
+              className="p-3 bg-white rounded-xl border border-[#E5E7EB] flex items-center justify-between gap-3"
             >
-              <div className="flex justify-between items-start">
-                <div className="flex-1 min-w-0 pr-2">
-                  <div className="font-medium text-xs text-zinc-900 dark:text-zinc-100 truncate">
-                    {item.name}
-                  </div>
-                  <div className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                    {formatRupiah(item.finalUnitPrice)}
-                    {item.appliedPromoName && (
-                      <span className="ml-1 text-[10px] text-emerald-600 font-medium">
-                        ({item.appliedPromoName})
-                      </span>
-                    )}
-                  </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-xs text-[#1E1E1E] truncate">
+                  {item.name}
                 </div>
 
-                <div className="font-semibold text-xs text-zinc-900 dark:text-zinc-100">
-                  {formatRupiah(item.totalPrice)}
+                <div className="mt-0.5 flex items-center gap-1.5">
+                  {item.originalPrice > item.finalUnitPrice && (
+                    <>
+                      <span className="text-[10px] text-[#9CA3AF] line-through">
+                        {formatRupiah(item.originalPrice)}
+                      </span>
+                      <span className="bg-[#FEE2E2] text-[#EF4444] text-[9px] font-bold px-1 py-0.2 rounded">
+                        -Rp{formatRupiah(item.originalPrice - item.finalUnitPrice).replace('Rp', '').trim()}
+                      </span>
+                    </>
+                  )}
+                  <span className="text-xs font-semibold text-[#00A250]">
+                    {formatRupiah(item.finalUnitPrice)}
+                  </span>
                 </div>
               </div>
 
-              {/* Quantity buttons */}
-              <div className="flex items-center justify-between pt-1">
+              {/* Stepper with rounded pill background #F9F9F9 (Matches line 600 CashierScreen.kt) */}
+              <div className="flex items-center bg-[#F9F9F9] border border-[#E5E7EB] rounded-full px-1 py-0.5">
                 <button
-                  onClick={() => onRemoveItem(item.id)}
-                  className="text-[10px] text-red-500 hover:text-red-700 hover:underline"
+                  onClick={() => onUpdateQty(item.id, -1)}
+                  className="w-7 h-7 flex items-center justify-center text-[#1E1E1E] hover:text-red-500 transition cursor-pointer"
                 >
-                  Hapus
+                  <Minus className="w-3.5 h-3.5" />
                 </button>
-
-                <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg p-0.5">
-                  <button
-                    onClick={() => onUpdateQty(item.id, -1)}
-                    className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded text-zinc-600 dark:text-zinc-300"
-                  >
-                    <Minus className="w-3 h-3" />
-                  </button>
-                  <span className="px-2 text-xs font-bold text-zinc-800 dark:text-zinc-200 min-w-6 text-center">
-                    {item.qty}
-                  </span>
-                  <button
-                    onClick={() => onUpdateQty(item.id, 1)}
-                    className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded text-zinc-600 dark:text-zinc-300"
-                  >
-                    <Plus className="w-3 h-3" />
-                  </button>
-                </div>
+                <span className="px-2 text-xs font-extrabold text-[#1E1E1E] min-w-6 text-center">
+                  {item.qty}
+                </span>
+                <button
+                  onClick={() => onUpdateQty(item.id, 1)}
+                  className="w-7 h-7 flex items-center justify-center text-[#00A250] hover:bg-[#D6F0E0] rounded-full transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
           ))
@@ -123,48 +111,48 @@ export function CartSidebar({
       </div>
 
       {/* Cart Summary & Checkout */}
-      <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/60 space-y-3">
+      <div className="p-5 border-t border-[#E5E7EB] bg-white rounded-b-3xl space-y-3">
         {/* Custom Discount Input */}
         <div className="flex items-center justify-between text-xs">
-          <span className="text-zinc-500">Potongan Diskon (Rp):</span>
+          <span className="font-medium text-[#8B8B8B]">Custom Diskon (Rp):</span>
           <input
             type="number"
             min="0"
             value={customDiscount || ''}
             onChange={(e) => onSetCustomDiscount(Math.max(0, parseFloat(e.target.value) || 0))}
             placeholder="0"
-            className="w-28 px-2.5 py-1 text-right bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-semibold focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+            className="w-32 px-3 py-1.5 text-right bg-[#F9F9F9] border border-[#E5E7EB] rounded-lg text-xs font-bold text-[#1E1E1E] focus:ring-1 focus:ring-[#00A250] focus:outline-none"
           />
         </div>
 
-        <div className="space-y-1 text-xs pt-1 border-t border-dashed border-zinc-200 dark:border-zinc-800">
-          <div className="flex justify-between text-zinc-500">
+        <div className="space-y-1.5 text-xs pt-2 border-t border-[#E5E7EB]">
+          <div className="flex justify-between text-[#8B8B8B]">
             <span>Subtotal</span>
-            <span>{formatRupiah(subtotal)}</span>
+            <span className="font-semibold text-[#1E1E1E]">{formatRupiah(subtotal)}</span>
           </div>
           {customDiscount > 0 && (
-            <div className="flex justify-between text-emerald-600 font-medium">
-              <span>Diskon</span>
+            <div className="flex justify-between text-[#EF4444] font-medium">
+              <span>Potongan Diskon</span>
               <span>-{formatRupiah(customDiscount)}</span>
             </div>
           )}
-          <div className="flex justify-between text-sm font-bold text-zinc-900 dark:text-zinc-100 pt-1">
+          <div className="flex justify-between text-sm font-extrabold text-[#1E1E1E] pt-1">
             <span>Total Bayar</span>
-            <span className="text-emerald-600 text-base">{formatRupiah(total)}</span>
+            <span className="text-[#00A250] text-lg font-black">{formatRupiah(total)}</span>
           </div>
         </div>
 
-        {/* Checkout Button */}
+        {/* Checkout Button (Big Green Rounded Pill) */}
         <button
           onClick={onCheckout}
           disabled={items.length === 0 || !isShiftActive}
-          className={`w-full py-3 px-4 rounded-xl text-xs font-bold text-white shadow-md flex items-center justify-center gap-2 transition cursor-pointer ${
+          className={`w-full h-12 rounded-full text-sm font-bold text-white flex items-center justify-center gap-2 transition cursor-pointer shadow-xs ${
             items.length === 0 || !isShiftActive
-              ? 'bg-zinc-400 cursor-not-allowed opacity-60'
-              : 'bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 shadow-emerald-600/20'
+              ? 'bg-[#E5E5EA] text-[#8B8B8B] cursor-not-allowed'
+              : 'bg-[#00A250] hover:bg-[#008f46] active:bg-[#007a3c]'
           }`}
         >
-          <span>{!isShiftActive ? 'Buka Shift Terlebih Dahulu' : 'Proses Bayar'}</span>
+          <span>{!isShiftActive ? 'Mulai Shift Kasir Terlebih Dahulu' : 'Proses Pembayaran'}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
