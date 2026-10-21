@@ -15,17 +15,17 @@ export async function loginAction(formData: FormData) {
   try {
     const supabase = await createClient()
 
-    // Cari user di tabel profiles berdasarkan email ATAU name yang cocok dan raw_password
-    const { data: profileByEmail, error: errEmail } = await supabase
+    // 1. Cari via email (case-insensitive)
+    const { data: profileByEmail } = await supabase
       .from('profiles')
       .select('*')
-      .eq('email', identifier)
+      .ilike('email', identifier)
       .eq('raw_password', password)
       .maybeSingle()
 
     let matchedProfile: Profile | null = profileByEmail
 
-    // Jika tidak ditemukan via email, coba cocokkan via name (karena beberapa user menggunakan nama sebagai login)
+    // 2. Jika tidak ditemukan, cari via nama lengkap (case-insensitive)
     if (!matchedProfile) {
       const { data: profileByName } = await supabase
         .from('profiles')
@@ -44,7 +44,7 @@ export async function loginAction(formData: FormData) {
       }
     }
 
-    // Simpan session
+    // Simpan session cookie
     await createSession(matchedProfile)
 
     return { success: true }

@@ -19,8 +19,7 @@ export function LoginForm() {
     startTransition(async () => {
       const res = await loginAction(formData)
       if (res.success) {
-        router.push('/kasir')
-        router.refresh()
+        window.location.href = '/kasir'
       } else {
         setError(res.error || 'Login gagal')
       }
@@ -48,7 +47,7 @@ export function LoginForm() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form method="POST" onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
             Email atau Nama Pengguna
@@ -62,7 +61,7 @@ export function LoginForm() {
               name="identifier"
               required
               autoFocus
-              placeholder="Contoh: barakahfauna@admin.com"
+              placeholder="Contoh: ferrin koesminarty atau barakahfauna@admin.com"
               className="w-full pl-11 pr-4 py-3 bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 transition-all"
             />
           </div>
@@ -86,7 +85,7 @@ export function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 cursor-pointer"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>

@@ -7,10 +7,19 @@ const SECRET_KEY = new TextEncoder().encode(
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Lewati semua aset internal Next.js, static files, fonts, dan images
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.')
+  ) {
+    return NextResponse.next()
+  }
+
   const token = request.cookies.get('barakah_session')?.value
 
   let isAuthenticated = false
-
   if (token) {
     try {
       await jwtVerify(token, SECRET_KEY)
@@ -21,20 +30,18 @@ export async function middleware(request: NextRequest) {
   }
 
   const isLoginPage = pathname === '/login'
-  const isApi = pathname.startsWith('/api')
 
-  // Landing page redirect
+  // Halaman Root: redirect ke /kasir jika login, atau ke /login jika belum
   if (pathname === '/') {
     return NextResponse.redirect(new URL(isAuthenticated ? '/kasir' : '/login', request.url))
   }
 
-  // Belum login tapi mengakses halaman terlindungi
-  if (!isAuthenticated && !isLoginPage && !isApi) {
-    const url = new URL('/login', request.url)
-    return NextResponse.redirect(url)
+  // Belum login dan mencoba mengakses halaman privat
+  if (!isAuthenticated && !isLoginPage) {
+    return NextResponse.redirect(new URL('/login', request.url))
   }
 
-  // Sudah login tapi mencoba akses /login
+  // Sudah login tapi masih di halaman /login
   if (isAuthenticated && isLoginPage) {
     return NextResponse.redirect(new URL('/kasir', request.url))
   }
@@ -43,5 +50,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const matcher = [
-  '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  /*
+   * Cocokkan semua request kecuali file statis
+   */
+  '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:css|js|map|json|png|jpg|jpeg|svg|webp|woff|woff2|ttf|ico)$).*)',
 ]
