@@ -4,6 +4,8 @@ import { UserManagementView } from './_components/UserManagementView'
 import { Profile } from '@/types/database'
 import { redirect } from 'next/navigation'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Kelola Akun - Barakah Fauna',
 }
@@ -18,11 +20,13 @@ export default async function UserManagementPage() {
     .from('profiles')
     .select('*')
     .order('role', { ascending: true })
+    .order('name', { ascending: true })
 
   return (
     <UserManagementView
       initialUsers={(usersData as Profile[]) || []}
       currentUserId={session.id}
+      currentUserRole={session.role}
     />
   )
 }

@@ -1,17 +1,18 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { Profile } from '@/types/database'
 import { createStaffAction, updateStaffAction } from '../_actions/userActions'
-import { X, Loader2, Users, Shield, Key } from 'lucide-react'
+import { X, Loader2, Users, Eye, EyeOff, ShieldCheck, CheckSquare, Square } from 'lucide-react'
 
 interface UserModalProps {
   user: Profile | null
   isOpen: boolean
   onClose: () => void
+  isOwnerLoggedIn?: boolean
 }
 
-const AVAILABLE_MENUS = [
+const ALL_MENUS = [
   'Kasir',
   'Produk & Stok',
   'Setup Diskon',
@@ -21,14 +22,37 @@ const AVAILABLE_MENUS = [
   'Pengaturan',
 ]
 
-export function UserModal({ user, isOpen, onClose }: UserModalProps) {
+const DEFAULT_STAFF_MENUS = ['Kasir', 'Laporan Penjualan', 'Laporan Kerja', 'Dashboard']
+
+export function UserModal({ user, isOpen, onClose, isOwnerLoggedIn: _isOwnerLoggedIn = true }: UserModalProps) {
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const isEditing = !!user
 
-  const [selectedMenus, setSelectedMenus] = useState<string[]>(
-    user?.menu_access || ['Kasir', 'Laporan Penjualan', 'Laporan Kerja', 'Dashboard']
-  )
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [role, setRole] = useState<'staff' | 'owner'>('staff')
+  const [selectedMenus, setSelectedMenus] = useState<string[]>(DEFAULT_STAFF_MENUS)
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '')
+      setEmail(user.email || '')
+      setPassword(user.raw_password || '')
+      setRole(user.role?.toLowerCase() === 'owner' ? 'owner' : 'staff')
+      setSelectedMenus(user.menu_access || DEFAULT_STAFF_MENUS)
+    } else {
+      setName('')
+      setEmail('')
+      setPassword('')
+      setRole('staff')
+      setSelectedMenus(DEFAULT_STAFF_MENUS)
+    }
+    setShowPassword(false)
+    setError(null)
+  }, [user, isOpen])
 
   if (!isOpen) return null
 
@@ -38,18 +62,37 @@ export function UserModal({ user, isOpen, onClose }: UserModalProps) {
     )
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSelectAllMenus = () => {
+    if (selectedMenus.length === ALL_MENUS.length) {
+      setSelectedMenus(['Kasir'])
+    } else {
+      setSelectedMenus([...ALL_MENUS])
+    }
+  }
+
+  const handleRoleChange = (newRole: 'staff' | 'owner') => {
+    setRole(newRole)
+    if (newRole === 'owner') {
+      setSelectedMenus([...ALL_MENUS])
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    const formData = new FormData(e.currentTarget)
 
-    const name = formData.get('name')?.toString() || ''
-    const email = formData.get('email')?.toString() || ''
-    const password = formData.get('password')?.toString() || ''
-    const role = formData.get('role')?.toString() || 'staff'
+    if (!name.trim()) {
+      setError('Nama lengkap tidak boleh kosong')
+      return
+    }
 
-    if (!name || !email || (!isEditing && !password)) {
-      setError('Lengkapi semua field yang wajib diisi')
+    if (!email.trim()) {
+      setError('Username / Email login tidak boleh kosong')
+      return
+    }
+
+    if (!isEditing && (!password || password.length < 3)) {
+      setError('Password minimal 3 karakter')
       return
     }
 
@@ -76,141 +119,188 @@ export function UserModal({ user, isOpen, onClose }: UserModalProps) {
       if (res.success) {
         onClose()
       } else {
-        setError(res.error || 'Gagal menyimpan data pengguna')
+        setError(res.error || 'Gagal menyimpan data akun')
       }
     })
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 rounded-xl">
-              <Users className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs">
+      <div className="w-full max-w-lg bg-white rounded-xl shadow-xl border border-[#e2e2e2] overflow-hidden flex flex-col max-h-[90vh]">
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-[#e2e2e2] flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-[#eef8f2] text-[#00A250] rounded-lg border border-[#b8e8cc]">
+              <Users className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-zinc-900 dark:text-zinc-100">
-                {isEditing ? 'Ubah Akun Pengguna' : 'Tambah Akun Kasir / Staf'}
+              <h3 className="font-bold text-sm text-[#262626]">
+                {isEditing ? `Ubah Akun: ${user.name}` : 'Tambah Akun Baru'}
               </h3>
-              <p className="text-[11px] text-zinc-500">
-                Atur username, password, dan izin hak akses menu
+              <p className="text-[11px] text-[#757575]">
+                {isEditing
+                  ? 'Perbarui data staf, username, password, dan izin menu'
+                  : 'Buat akun pengguna baru untuk kasir atau pemilik toko'}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-lg"
+            disabled={isPending}
+            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition cursor-pointer disabled:opacity-40"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs overflow-y-auto flex-1">
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 rounded-xl text-red-600 dark:text-red-400">
+            <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 font-medium">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+            <label className="block font-semibold text-[#262626] mb-1.5">
               Nama Lengkap *
             </label>
             <input
               type="text"
-              name="name"
               required
-              defaultValue={user?.name || ''}
-              placeholder="Contoh: Siti Rahmawati"
-              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Contoh: Anip Nur Halimah"
+              className="w-full px-3 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-xs text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none placeholder:text-gray-400 shadow-2xs"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
+              <label className="block font-semibold text-[#262626] mb-1.5">
                 Username / Email Login *
               </label>
               <input
                 type="text"
-                name="email"
                 required
-                defaultValue={user?.email || ''}
-                placeholder="Contoh: sitir@pos.com atau siti"
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Contoh: anip atau kasir1@pos.com"
+                className="w-full px-3 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-xs text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none placeholder:text-gray-400 shadow-2xs"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-                Role Pengguna
+              <label className="block font-semibold text-[#262626] mb-1.5">
+                Role Pengguna *
               </label>
+              {/* Drop down role HANYA ada staff dan owner sesuai permintaan user */}
               <select
-                name="role"
-                defaultValue={user?.role || 'staff'}
-                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none capitalize"
+                value={role}
+                onChange={(e) => handleRoleChange(e.target.value as 'staff' | 'owner')}
+                className="w-full px-3 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-xs text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none cursor-pointer shadow-2xs"
               >
-                <option value="staff">Staff / Kasir</option>
-                <option value="owner">Owner / Pemilik</option>
-                <option value="admin">Administrator</option>
+                <option value="staff">Staff</option>
+                <option value="owner">Owner</option>
               </select>
             </div>
           </div>
 
           <div>
-            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1.5">
-              Password {isEditing ? '(Kosongkan jika tidak ingin mengubah)' : '*'}
-            </label>
-            <input
-              type="password"
-              name="password"
-              required={!isEditing}
-              placeholder="••••••••"
-              className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-            />
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="font-semibold text-[#262626]">
+                Password {isEditing ? '(Bisa dilihat & diubah oleh Owner)' : '*'}
+              </label>
+              {password && (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-[11px] text-[#00A250] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  <span>{showPassword ? 'Sembunyikan' : 'Lihat Password'}</span>
+                </button>
+              )}
+            </div>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required={!isEditing}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={isEditing ? 'Masukkan password baru atau biarkan' : 'Minimal 6 karakter'}
+                className="w-full pl-3 pr-10 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-xs font-mono text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none placeholder:text-gray-400 shadow-2xs"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-3 text-gray-400 hover:text-gray-700 transition cursor-pointer"
+                title={showPassword ? 'Sembunyikan' : 'Tampilkan'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
-          <div>
-            <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
-              Hak Akses Menu (Centang yang diizinkan)
-            </label>
-            <div className="grid grid-cols-2 gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700">
-              {AVAILABLE_MENUS.map((menu) => {
+          {/* Menu Access Checkbox List */}
+          <div className="space-y-2 pt-1">
+            <div className="flex items-center justify-between">
+              <label className="font-semibold text-[#262626] flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#00A250]" />
+                <span>Hak Akses Menu POS</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleSelectAllMenus}
+                className="text-[11px] font-semibold text-[#00A250] hover:underline cursor-pointer"
+              >
+                {selectedMenus.length === ALL_MENUS.length ? 'Reset Pilihan' : 'Pilih Semua'}
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 p-3 bg-gray-50/80 rounded-xl border border-[#e2e2e2]">
+              {ALL_MENUS.map((menu) => {
                 const isChecked = selectedMenus.includes(menu)
                 return (
                   <label
                     key={menu}
-                    className="flex items-center gap-2 cursor-pointer select-none text-zinc-700 dark:text-zinc-300"
+                    className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white transition cursor-pointer select-none text-[#262626]"
                   >
                     <input
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => handleToggleMenu(menu)}
-                      className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer"
+                      className="hidden"
                     />
-                    <span>{menu}</span>
+                    {isChecked ? (
+                      <CheckSquare className="w-4 h-4 text-[#00A250] shrink-0" />
+                    ) : (
+                      <Square className="w-4 h-4 text-gray-400 shrink-0" />
+                    )}
+                    <span className="font-medium text-xs">{menu}</span>
                   </label>
                 )
               })}
             </div>
           </div>
 
-          <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-2">
+          {/* Modal Footer Actions */}
+          <div className="pt-3 border-t border-[#e2e2e2] flex items-center justify-end gap-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-xl transition"
+              disabled={isPending}
+              className="px-4 py-2 text-xs font-medium text-gray-700 bg-white border border-[#e2e2e2] rounded-xl hover:bg-gray-50 transition cursor-pointer shadow-2xs disabled:opacity-40"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={isPending}
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:opacity-50 text-white font-semibold rounded-xl shadow-sm flex items-center gap-1.5 transition"
+              className="px-4 py-2 bg-[#00A250] hover:bg-[#008f46] disabled:opacity-50 text-white font-semibold rounded-xl shadow-xs flex items-center gap-1.5 transition cursor-pointer"
             >
               {isPending && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-              <span>{isEditing ? 'Simpan Perubahan' : 'Buat Pengguna'}</span>
+              <span>{isEditing ? 'Simpan Perubahan' : 'Buat Akun'}</span>
             </button>
           </div>
         </form>

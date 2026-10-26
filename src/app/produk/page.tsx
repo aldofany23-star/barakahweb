@@ -3,7 +3,7 @@ import { ProductManagementView } from './_components/ProductManagementView'
 import { Product, Category, StockLog } from '@/types/database'
 
 export const metadata = {
-  title: 'Manajemen Produk & Stok - Barakah Fauna',
+  title: 'Produk & Stock - Barakah Fauna',
 }
 
 export default async function ProductPage() {

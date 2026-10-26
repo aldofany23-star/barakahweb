@@ -30,13 +30,13 @@ export default async function RootLayout({
 
   return (
     <html lang="id" className={archivo.variable}>
-      <body className="antialiased bg-[#F9F9F9] text-[#1E1E1E] min-h-screen">
+      <body className="antialiased bg-white text-[#262626] min-h-screen">
         {session ? (
-          <div className="flex min-h-screen">
-            <Sidebar session={session} />
-            <div className="flex-1 flex flex-col min-w-0 pb-16 lg:pb-0">
-              <Header session={session} currentShift={currentShift} />
-              <main className="flex-1 p-3 sm:p-5 lg:p-6 overflow-y-auto">
+          <div className="flex flex-col min-h-screen bg-white">
+            <Header session={session} currentShift={currentShift} />
+            <div className="flex flex-1 min-h-0">
+              <Sidebar session={session} currentShift={currentShift} />
+              <main className="flex-1 overflow-y-auto overflow-x-hidden bg-white min-w-0 pb-16 md:pb-0">
                 {children}
               </main>
             </div>

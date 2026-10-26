@@ -64,14 +64,6 @@ export async function getSession(): Promise<UserSession | null> {
   try {
     const { payload } = await jwtVerify(token, SECRET_KEY)
     const session = payload as unknown as UserSession
-
-    // Auto-logout jika hari sudah berganti (melewati tengah malam WIB, sama seperti di Android)
-    const todayWib = getTodayWib()
-    if (session.loginDateWib && session.loginDateWib !== todayWib) {
-      await deleteSession()
-      return null
-    }
-
     return session
   } catch {
     return null

@@ -58,6 +58,7 @@ export interface Bundle {
   end_date?: string | null
   is_active: boolean
   created_at?: string
+  items?: (BundleItem & { product?: Product | null })[]
 }
 
 export interface BundleItem {
@@ -73,10 +74,15 @@ export interface Shift {
   user_id?: string | null
   start_time: string
   end_time?: string | null
-  expected_revenue: number
-  actual_revenue: number
+  expected_revenue?: number
+  actual_revenue?: number
+  system_revenue?: number | null
+  starting_cash?: number | null
+  cash_difference?: number | null
+  notes?: string | null
   status: 'active' | 'closed' | string
   created_at?: string
+  profile?: { name: string } | null
 }
 
 export interface Order {

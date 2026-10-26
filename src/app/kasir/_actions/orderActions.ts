@@ -96,24 +96,47 @@ export async function createOrderAction(input: CheckoutInput) {
           await supabase.from('products').update({ stock_qty: newQty }).eq('id', item.product.id)
         }
       } else if (item.isBundle && item.bundle) {
-        // Bundle
+        // Bundle (100% mirrors Android CashierViewModel.kt:368-410 proportional allocation)
         const { data: bundleItems } = await supabase
           .from('bundle_items')
           .select('*, product:products(*)')
           .eq('bundle_id', item.bundle.id)
 
         if (bundleItems && bundleItems.length > 0) {
-          for (const bi of bundleItems) {
+          const totalNormalPrice = bundleItems.reduce((sum, bi) => {
+            const p = bi.product as Product
+            return sum + (p?.sell_price || 0) * (bi.qty || 1)
+          }, 0)
+
+          let remainingAllocatedTotal = item.totalPrice
+
+          for (let idx = 0; idx < bundleItems.length; idx++) {
+            const bi = bundleItems[idx]
+            const p = bi.product as Product
             const totalQty = (bi.qty || 1) * item.qty
-            const unitPrice = bi.product ? (bi.product as Product).sell_price : 0
+
+            let allocatedTotal = 0
+            if (idx === bundleItems.length - 1) {
+              allocatedTotal = remainingAllocatedTotal
+            } else {
+              const ratio =
+                totalNormalPrice > 0
+                  ? ((bi.qty || 1) * (p?.sell_price || 0)) / totalNormalPrice
+                  : 1 / bundleItems.length
+              allocatedTotal = Math.round(item.totalPrice * ratio)
+              remainingAllocatedTotal -= allocatedTotal
+            }
+
+            const unitPrice = totalQty > 0 ? allocatedTotal / totalQty : 0
 
             await supabase.from('order_items').insert({
               order_id: orderId,
               product_id: bi.product_id,
               qty: totalQty,
               unit_price: unitPrice,
-              total_price: unitPrice * totalQty,
+              total_price: allocatedTotal,
               bundle_name: item.bundle.name,
+              applied_promo_name: null,
             })
 
             await supabase.from('stock_logs').insert({
@@ -131,7 +154,7 @@ export async function createOrderAction(input: CheckoutInput) {
               .single()
 
             if (currentP) {
-              const newQty = (currentP.stock_qty || 0) - totalQty
+              const newQty = Math.max(0, (currentP.stock_qty || 0) - totalQty)
               await supabase.from('products').update({ stock_qty: newQty }).eq('id', bi.product_id)
             }
           }

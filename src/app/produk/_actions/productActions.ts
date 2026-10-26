@@ -105,8 +105,8 @@ export async function deleteProductAction(id: string) {
 export async function adjustStockAction(
   productId: string,
   qtyChange: number,
-  type: 'in' | 'adjustment' | 'return',
-  reason: string
+  typeOrReason: string,
+  maybeReason?: string
 ) {
   const session = await getSession()
   if (!session) return { success: false, error: 'Unauthorized' }
@@ -116,13 +116,19 @@ export async function adjustStockAction(
   // Ambil data produk
   const { data: prod } = await supabase
     .from('products')
-    .select('stock_qty')
+    .select('stock_qty, name')
     .eq('id', productId)
     .single()
 
   if (!prod) return { success: false, error: 'Produk tidak ditemukan' }
 
   const newStock = Math.max(0, (prod.stock_qty || 0) + qtyChange)
+
+  // Tentukan reason dan type log
+  const reason = maybeReason ? maybeReason.trim() : typeOrReason.trim()
+  const logType = (typeOrReason === 'in' || typeOrReason === 'adjustment')
+    ? typeOrReason
+    : (qtyChange >= 0 ? 'in' : 'adjustment')
 
   // Update stok
   const { error: updateErr } = await supabase
@@ -136,9 +142,9 @@ export async function adjustStockAction(
   await supabase.from('stock_logs').insert({
     product_id: productId,
     user_id: session.id,
-    type,
+    type: logType,
     qty_change: qtyChange,
-    reason,
+    reason: reason || (qtyChange >= 0 ? 'Penambahan Stok' : 'Pengurangan Stok'),
   })
 
   revalidatePath('/produk')
@@ -151,7 +157,45 @@ export async function createCategoryAction(name: string) {
   if (!session) return { success: false, error: 'Unauthorized' }
 
   const supabase = await createClient()
-  const { error } = await supabase.from('categories').insert({ name })
+  const { error } = await supabase.from('categories').insert({ name: name.trim() })
+
+  if (error) return { success: false, error: error.message }
+
+  revalidatePath('/produk')
+  revalidatePath('/kasir')
+  return { success: true }
+}
+
+export async function updateCategoryAction(id: string, name: string) {
+  const session = await getSession()
+  if (!session) return { success: false, error: 'Unauthorized' }
+
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('categories')
+    .update({ name: name.trim() })
+    .eq('id', id)
+
+  if (error) return { success: false, error: error.message }
+
+  revalidatePath('/produk')
+  revalidatePath('/kasir')
+  return { success: true }
+}
+
+export async function deleteCategoryAction(id: string) {
+  const session = await getSession()
+  if (!session) return { success: false, error: 'Unauthorized' }
+
+  const supabase = await createClient()
+
+  // Null-kan category_id pada produk yang memakai kategori ini terlebih dahulu agar aman
+  await supabase
+    .from('products')
+    .update({ category_id: null })
+    .eq('category_id', id)
+
+  const { error } = await supabase.from('categories').delete().eq('id', id)
 
   if (error) return { success: false, error: error.message }
 

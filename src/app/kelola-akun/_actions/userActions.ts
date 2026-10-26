@@ -12,16 +12,18 @@ export async function createStaffAction(data: {
   menuAccess: string[]
 }) {
   const session = await getSession()
-  if (!session || (session.role !== 'owner' && session.role !== 'admin')) {
-    return { success: false, error: 'Hanya Admin/Owner yang dapat membuat akun staf' }
+  if (!session || (session.role?.toLowerCase() !== 'owner' && session.role?.toLowerCase() !== 'admin')) {
+    return { success: false, error: 'Hanya Owner yang dapat membuat akun' }
   }
 
   const supabase = await createClient()
+  const cleanRole = data.role?.toLowerCase() === 'owner' ? 'owner' : 'staff'
+
   const { error } = await supabase.from('profiles').insert({
-    name: data.name,
+    name: data.name.trim(),
     email: data.email.trim(),
-    raw_password: data.password,
-    role: data.role,
+    raw_password: data.password.trim(),
+    role: cleanRole,
     menu_access: data.menuAccess,
   })
 
@@ -42,21 +44,22 @@ export async function updateStaffAction(
   }
 ) {
   const session = await getSession()
-  if (!session || (session.role !== 'owner' && session.role !== 'admin')) {
-    return { success: false, error: 'Hanya Admin/Owner yang dapat mengubah akun staf' }
+  if (!session || (session.role?.toLowerCase() !== 'owner' && session.role?.toLowerCase() !== 'admin')) {
+    return { success: false, error: 'Hanya Owner yang dapat mengubah akun' }
   }
 
   const supabase = await createClient()
+  const cleanRole = data.role?.toLowerCase() === 'owner' ? 'owner' : 'staff'
 
   const payload: Record<string, unknown> = {
-    name: data.name,
+    name: data.name.trim(),
     email: data.email.trim(),
-    role: data.role,
+    role: cleanRole,
     menu_access: data.menuAccess,
   }
 
-  if (data.password) {
-    payload.raw_password = data.password
+  if (data.password && data.password.trim().length > 0) {
+    payload.raw_password = data.password.trim()
   }
 
   const { error } = await supabase.from('profiles').update(payload).eq('id', id)
@@ -69,12 +72,12 @@ export async function updateStaffAction(
 
 export async function deleteStaffAction(id: string) {
   const session = await getSession()
-  if (!session || (session.role !== 'owner' && session.role !== 'admin')) {
-    return { success: false, error: 'Hanya Admin/Owner yang dapat menghapus akun' }
+  if (!session || (session.role?.toLowerCase() !== 'owner' && session.role?.toLowerCase() !== 'admin')) {
+    return { success: false, error: 'Hanya Owner yang dapat menghapus akun' }
   }
 
   if (session.id === id) {
-    return { success: false, error: 'Tidak dapat menghapus akun sendiri yang sedang aktif' }
+    return { success: false, error: 'Tidak dapat menghapus akun Anda sendiri yang sedang aktif' }
   }
 
   const supabase = await createClient()

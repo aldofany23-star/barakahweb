@@ -114,5 +114,7 @@ export async function endShiftAction(shiftId: string, actualRevenue: number) {
   }
 
   revalidatePath('/', 'layout')
+  revalidatePath('/laporan-penjualan')
+  revalidatePath('/kasir')
   return { success: true }
 }
