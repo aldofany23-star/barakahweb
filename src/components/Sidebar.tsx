@@ -335,7 +335,7 @@ export function Sidebar({ session, currentShift }: SidebarProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-[#00A250] animate-pulse" />
-            <span className="text-[11px] font-medium text-gray-600">Sistem Berjalan Normal</span>
+            <span className="text-[11px] font-medium text-gray-600">Development</span>
           </div>
           <span className="text-[10px] text-gray-400">v1.2</span>
         </div>
