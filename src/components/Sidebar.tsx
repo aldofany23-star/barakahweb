@@ -354,7 +354,7 @@ export function Sidebar({ session, currentShift }: SidebarProps) {
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50 md:hidden"
+          className="fixed inset-0 bg-black/40 z-50 md:hidden"
         />
       )}
 

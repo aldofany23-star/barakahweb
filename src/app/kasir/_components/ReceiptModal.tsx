@@ -50,7 +50,7 @@ export function ReceiptModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs print:p-0 print:bg-white">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 print:p-0 print:bg-white">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-[#e2e2e2] overflow-hidden flex flex-col max-h-[92vh] print:border-none print:shadow-none print:max-w-none print:w-full">
           {/* Header (Mirrors CashierScreen.kt:233-255) */}
           <div className="px-4 py-3.5 border-b border-[#e2e2e2] flex items-center justify-between print:hidden">

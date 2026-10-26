@@ -439,7 +439,7 @@ export function DiscountView({
     setConfirmDialog({
       isOpen: true,
       title: 'Terapkan Diskon',
-      message: `Apakah Anda yakin ingin menerapkan promo ${singleName} ${
+      message: `Apakah Anda yakin ingin menerapkan promo "${singleName}" ${
         singleType === 'percentage' ? `${singleParsedValue}%` : formatRupiah(singleParsedValue)
       } untuk produk "${selectedProductForSingle.name}"?`,
       icon: 'info',
@@ -730,22 +730,11 @@ export function DiscountView({
             </div>
           ) : (
             <div className="space-y-6">
-              {/* Search Result Empty State */}
-              {filteredBundles.length === 0 && filteredDiscounts.length === 0 && (
-                <div className="p-10 text-center bg-white rounded-xl border border-[#e2e2e2] shadow-2xs">
-                  <Search className="w-8 h-8 stroke-1 mx-auto mb-2 text-gray-400" />
-                  <h3 className="font-bold text-sm text-[#262626]">Tidak ada hasil promo</h3>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Tidak ada promo atau paket bundling yang cocok dengan &quot;{searchQuery}&quot;
-                  </p>
-                </div>
-              )}
-
               {/* SECTION: PAKET BUNDLING AKTIF */}
               {filteredBundles.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Gift className="w-4 h-4 text-[#00A250]" />
+                    <Gift className="w-4 h-4 text-blue-600" />
                     <h2 className="font-bold text-sm sm:text-base text-[#262626]">
                       Paket Bundling Aktif ({filteredBundles.length})
                     </h2>
@@ -765,25 +754,20 @@ export function DiscountView({
                       return (
                         <div
                           key={bundle.id}
-                          className="bg-white rounded-xl border border-[#e2e2e2] overflow-hidden shadow-2xs flex flex-col justify-between hover:border-[#b8e8cc] transition"
+                          className="bg-white rounded-2xl border border-[#e2e2e2] overflow-hidden shadow-2xs flex flex-col justify-between hover:border-blue-300 transition"
                         >
                           {/* Bundle Card Header */}
-                          <div className="bg-[#f8fdf9] px-4 py-3 border-b border-[#e2e2e2] flex items-center justify-between">
+                          <div className="bg-[#f0f9ff] px-4 py-3 border-b border-[#e0f2fe] flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
-                              <div className="w-8 h-8 rounded-lg bg-[#eef8f2] border border-[#b8e8cc] flex items-center justify-center text-[#00A250]">
+                              <div className="w-8 h-8 rounded-full bg-[#dbeafe] flex items-center justify-center text-[#2563eb]">
                                 <Gift className="w-4 h-4" />
                               </div>
                               <div>
-                                <h3 className="font-bold text-sm text-[#262626]">{bundle.name}</h3>
-                                {dateStr ? (
-                                  <span className="text-xs font-semibold text-[#d97706] flex items-center gap-1 mt-0.5">
-                                    <Calendar className="w-3.5 h-3.5" />
+                                <h3 className="font-bold text-sm text-[#1e3a8a]">{bundle.name}</h3>
+                                {dateStr && (
+                                  <span className="text-[11px] font-semibold text-[#d97706] flex items-center gap-1 mt-0.5">
+                                    <Calendar className="w-3 h-3" />
                                     <span>Berakhir: {dateStr}</span>
-                                  </span>
-                                ) : (
-                                  <span className="text-xs font-semibold text-[#00A250] flex items-center gap-1 mt-0.5">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#00A250]" />
-                                    <span>Aktif Selamanya</span>
                                   </span>
                                 )}
                               </div>
@@ -800,7 +784,7 @@ export function DiscountView({
 
                           {/* Bundle Items List */}
                           <div className="p-4 space-y-3 flex-1">
-                            <div className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
                               Isi Paket Bundling:
                             </div>
                             <div className="space-y-1.5 divide-y divide-gray-100">
@@ -810,15 +794,15 @@ export function DiscountView({
                                   className="pt-1.5 flex items-center justify-between text-xs"
                                 >
                                   <div className="flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#00A250] shrink-0" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
                                     <span className="font-semibold text-gray-800">
                                       {bi.product?.name || 'Produk'}
                                     </span>
-                                    <span className="px-1.5 py-0.5 rounded text-xs font-bold bg-[#eef8f2] text-[#00A250] border border-[#b8e8cc]">
+                                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700">
                                       x{bi.qty}
                                     </span>
                                   </div>
-                                  <span className="text-gray-500 text-xs">
+                                  <span className="text-gray-500 text-[11px]">
                                     {formatRupiah((bi.product?.sell_price || 0) * (bi.qty || 1))}
                                   </span>
                                 </div>
@@ -829,7 +813,7 @@ export function DiscountView({
                           {/* Bundle Pricing Footer */}
                           <div className="px-4 py-3 bg-[#fafafa] border-t border-[#e2e2e2] flex items-center justify-between">
                             <div>
-                              <div className="text-xs text-gray-500 font-medium">
+                              <div className="text-[10px] text-gray-500 font-medium">
                                 Total Harga Normal:
                               </div>
                               {totalNormal > bundle.bundle_price && (
@@ -837,15 +821,15 @@ export function DiscountView({
                                   {formatRupiah(totalNormal)}
                                 </div>
                               )}
-                              <div className="text-xs text-green-700 font-semibold mt-0.5">
+                              <div className="text-[10px] text-green-700 font-semibold mt-0.5">
                                 Margin: +{formatRupiah(rawMargin)}
                               </div>
                             </div>
                             <div className="text-right">
-                              <div className="text-xs text-[#00A250] font-bold uppercase tracking-wider">
+                              <div className="text-[10px] text-[#00A250] font-bold uppercase tracking-wider">
                                 Harga Paket Spesial
                               </div>
-                              <div className="text-sm font-bold text-[#00A250]">
+                              <div className="text-lg font-black text-[#00A250]">
                                 {formatRupiah(bundle.bundle_price)}
                               </div>
                             </div>
@@ -857,25 +841,35 @@ export function DiscountView({
                 </div>
               )}
 
-              {/* SECTION: DISKON TUNGGAL AKTIF (CLOUDFLARE DATA TABLE) */}
-              {filteredDiscounts.length > 0 && (
-                <div className="bg-white rounded-xl border border-[#e2e2e2] overflow-hidden shadow-2xs">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs whitespace-nowrap">
-                      <thead className="bg-[#f8f8f8] text-[#757575] uppercase tracking-wider font-semibold border-b border-[#e2e2e2]">
-                        <tr>
-                          <th className="py-3 px-4 text-xs font-semibold">Nama Produk</th>
-                          <th className="py-3 px-4 text-xs font-semibold">Nama Promo</th>
-                          <th className="py-3 px-4 text-xs font-semibold">Harga Normal</th>
-                          <th className="py-3 px-4 text-xs font-semibold">Diskon</th>
-                          <th className="py-3 px-4 text-xs font-semibold">Harga Promo</th>
-                          <th className="py-3 px-4 text-xs font-semibold">Margin Riil</th>
-                          <th className="py-3 px-4 text-xs font-semibold">Masa Berlaku</th>
-                          <th className="py-3 px-4 text-xs font-semibold text-right">Aksi</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-[#e2e2e2]">
-                        {filteredDiscounts.map((discount) => {
+              {/* SECTION: DISKON TUNGGAL AKTIF (GROUPED BY PROMO NAME) */}
+              {Object.keys(groupedDiscounts).length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-[#00A250]" />
+                    <h2 className="font-bold text-sm sm:text-base text-[#262626]">
+                      Diskon Tunggal Aktif ({filteredDiscounts.length})
+                    </h2>
+                  </div>
+
+                  {Object.entries(groupedDiscounts).map(([promoName, promoList]) => (
+                    <div
+                      key={promoName}
+                      className="bg-white rounded-2xl border border-[#e2e2e2] overflow-hidden shadow-2xs"
+                    >
+                      <div className="px-4 py-2.5 bg-[#f8fdf9] border-b border-[#b8e8cc] flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[#00A250]" />
+                          <h3 className="font-bold text-xs sm:text-sm text-[#00A250]">
+                            {promoName}
+                          </h3>
+                        </div>
+                        <span className="text-[11px] font-semibold text-gray-500">
+                          {promoList.length} Produk
+                        </span>
+                      </div>
+
+                      <div className="divide-y divide-[#e2e2e2]">
+                        {promoList.map((discount) => {
                           const product = discount.product
                           if (!product) return null
                           const endPrice =
@@ -886,74 +880,56 @@ export function DiscountView({
                           const dateStr = discount.end_date ? discount.end_date.slice(0, 10) : ''
 
                           return (
-                            <tr key={discount.id} className="hover:bg-[#fafafa] transition">
-                              <td className="py-3.5 px-4 align-middle">
-                                <div className="font-bold text-[#262626]">
-                                  {product.name}
+                            <div
+                              key={discount.id}
+                              className="p-3.5 sm:p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 hover:bg-gray-50 transition"
+                            >
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="font-bold text-xs sm:text-sm text-[#262626]">
+                                    {product.name}
+                                  </h4>
+                                  <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#eef8f2] text-[#00A250] border border-[#b8e8cc]">
+                                    {discount.type === 'percentage'
+                                      ? `Diskon ${discount.value}%`
+                                      : `Hemat ${formatRupiah(discount.value)}`}
+                                  </span>
                                 </div>
-                                {product.sku && (
-                                  <div className="text-[11px] font-mono text-gray-500 mt-0.5">
-                                    SKU: {product.sku}
+                                <div className="text-[11px] text-gray-500 flex items-center gap-3">
+                                  <span>Normal: <span className="line-through">{formatRupiah(product.sell_price)}</span></span>
+                                  {dateStr && (
+                                    <span className="text-amber-600 font-medium">
+                                      Berlaku s/d: {dateStr}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4">
+                                <div className="bg-[#f8fdf9] border border-[#b8e8cc] rounded-xl px-3 py-1.5 text-right">
+                                  <div className="text-[10px] text-gray-500 font-medium">
+                                    Harga Promo (Margin: {formatRupiah(rawMargin)})
                                   </div>
-                                )}
-                              </td>
-                              <td className="py-3.5 px-4 align-middle">
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-semibold bg-[#eef8f2] text-[#00A250] border border-[#b8e8cc]">
-                                  <Tag className="w-3.5 h-3.5 shrink-0" />
-                                  <span>{discount.name || 'Promo Spesial'}</span>
-                                </span>
-                              </td>
-                              <td className="py-3.5 px-4 align-middle font-medium text-gray-400">
-                                <span className="line-through">{formatRupiah(product.sell_price)}</span>
-                              </td>
-                              <td className="py-3.5 px-4 align-middle">
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-md font-bold bg-red-50 text-red-600 border border-red-200">
-                                  {discount.type === 'percentage'
-                                    ? `-${Math.round(discount.value)}%`
-                                    : `-Rp ${formatRupiah(discount.value).replace('Rp', '').trim()}`}
-                                </span>
-                              </td>
-                              <td className="py-3.5 px-4 align-middle font-bold text-[#00A250]">
-                                {formatRupiah(endPrice)}
-                              </td>
-                              <td className="py-3.5 px-4 align-middle">
-                                <span
-                                  className={`font-semibold ${
-                                    rawMargin <= 0 ? 'text-red-600' : 'text-emerald-700'
-                                  }`}
-                                >
-                                  +{formatRupiah(rawMargin)}
-                                </span>
-                              </td>
-                              <td className="py-3.5 px-4 align-middle text-gray-500">
-                                {dateStr ? (
-                                  <span className="inline-flex items-center gap-1.5 text-amber-700 font-medium bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">
-                                    <Calendar className="w-3.5 h-3.5 shrink-0" />
-                                    <span>s/d {dateStr}</span>
-                                  </span>
-                                ) : (
-                                  <span className="inline-flex items-center gap-1.5 text-[#00A250] font-medium bg-[#eef8f2] px-2.5 py-1 rounded-md border border-[#b8e8cc]">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#00A250]" />
-                                    <span>Aktif Selamanya</span>
-                                  </span>
-                                )}
-                              </td>
-                              <td className="py-3.5 px-4 align-middle text-right">
+                                  <div className="text-sm sm:text-base font-black text-[#00A250]">
+                                    {formatRupiah(endPrice)}
+                                  </div>
+                                </div>
+
                                 <button
                                   onClick={() => handleConfirmDeleteDiscount(discount)}
                                   disabled={isPending}
-                                  title="Hapus / Nonaktifkan Promo"
-                                  className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition cursor-pointer"
+                                  title="Hapus Promo"
+                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-xl transition cursor-pointer"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </button>
-                              </td>
-                            </tr>
+                              </div>
+                            </div>
                           )
                         })}
-                      </tbody>
-                    </table>
-                  </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

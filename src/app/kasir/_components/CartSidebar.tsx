@@ -204,7 +204,7 @@ export function CartSidebar({
       {showDiscountDialog && (
         <div
           onClick={() => setShowDiscountDialog(false)}
-          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs"
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50"
         >
           <div
             onClick={(e) => e.stopPropagation()}

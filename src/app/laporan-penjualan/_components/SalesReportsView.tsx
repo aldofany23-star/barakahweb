@@ -1121,7 +1121,7 @@ export function SalesReportsView({
 
       {/* Export Progress Modal */}
       {isExporting && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-[#e2e2e2] shadow-xl p-5 max-w-sm w-full space-y-3.5">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-[#eef8f2] text-[#00A250] border border-[#b8e8cc]">

@@ -123,7 +123,7 @@ export function CheckoutModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-[#e2e2e2] overflow-hidden flex flex-col max-h-[92vh]">
           {/* Header */}
           <div className="px-5 py-4 border-b border-[#e2e2e2] flex items-center justify-between">
@@ -420,7 +420,7 @@ export function CheckoutModal({
       {showExpandedQris && storeProfile?.qris_image_url && (
         <div
           onClick={() => setShowExpandedQris(false)}
-          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm cursor-pointer"
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/75 cursor-pointer"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -452,7 +452,7 @@ export function CheckoutModal({
       {showDiscountDialog && (
         <div
           onClick={() => setShowDiscountDialog(false)}
-          className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+          className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/60"
         >
           <div
             onClick={(e) => e.stopPropagation()}

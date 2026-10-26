@@ -359,7 +359,7 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
                   <button
                     type="button"
                     onClick={() => setPreviewModalOpen(true)}
-                    className="absolute inset-0 bg-black/40 text-white rounded opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1.5 text-xs font-semibold backdrop-blur-2xs cursor-pointer"
+                    className="absolute inset-0 bg-black/40 text-white rounded opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer"
                   >
                     <Maximize2 className="w-4 h-4" />
                     <span>Lihat Ukuran Penuh</span>
@@ -477,7 +477,7 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
       {/* Modal Preview Fullscreen QRIS */}
       {previewModalOpen && qrisImageUrl && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
           onClick={() => setPreviewModalOpen(false)}
         >
           <div

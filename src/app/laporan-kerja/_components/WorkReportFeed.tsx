@@ -359,7 +359,7 @@ export function WorkReportFeed({
 
       {/* Delete Confirmation Modal (Mirrors Android BarakahPopupDialog) */}
       {reportToDelete && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl border border-[#e2e2e2] shadow-xl p-6 max-w-sm w-full space-y-4">
             <div className="flex items-center gap-3">
               <div className="p-2.5 rounded-xl bg-red-50 text-red-600 border border-red-200">
@@ -519,7 +519,7 @@ function ReportCardItem({
                 alt="Dokumentasi Laporan"
                 className="w-full h-full object-cover group-hover:scale-[1.01] transition duration-200"
               />
-              <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-xs text-white text-[10px] rounded-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+              <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/75 text-white text-[10px] rounded-md flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
                 <ImageIcon className="w-3 h-3" />
                 <span>Klik untuk perbesar</span>
               </div>
@@ -571,7 +571,7 @@ function ReportCardItem({
               </div>
 
               {/* Indicator Dots (Mirrors Android pager dots) */}
-              <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-black/40 backdrop-blur-xs rounded-full flex items-center gap-1.5">
+              <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-black/60 rounded-full flex items-center gap-1.5">
                 {images.map((_, i) => (
                   <button
                     key={i}

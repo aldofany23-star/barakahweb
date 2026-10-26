@@ -590,7 +590,7 @@ export function ProductManagementView({
       {categoryToEdit && (
         <div
           onClick={() => setCategoryToEdit(null)}
-          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-150"
+          className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/50 animate-in fade-in duration-150"
         >
           <div
             onClick={(e) => e.stopPropagation()}

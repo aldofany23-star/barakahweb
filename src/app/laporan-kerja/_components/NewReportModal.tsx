@@ -175,7 +175,7 @@ export function NewReportModal({ isOpen, onClose, onSuccess }: NewReportModalPro
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40">
       <div className="w-full max-w-lg bg-white rounded-xl shadow-xl border border-[#e2e2e2] overflow-hidden">
         {/* Modal Header */}
         <div className="px-5 py-4 border-b border-[#e2e2e2] flex items-center justify-between">

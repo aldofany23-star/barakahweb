@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { Archivo } from 'next/font/google'
 import './globals.css'
@@ -5,6 +6,7 @@ import { getSession } from '@/lib/session'
 import { getActiveShift } from '@/lib/actions/shiftActions'
 import { Sidebar } from '@/components/Sidebar'
 import { Header } from '@/components/Header'
+import { PageTransitionLoader } from '@/components/PageTransitionLoader'
 
 const archivo = Archivo({
   subsets: ['latin'],
@@ -31,6 +33,9 @@ export default async function RootLayout({
   return (
     <html lang="id" className={archivo.variable}>
       <body className="antialiased bg-white text-[#262626] min-h-screen">
+        <Suspense fallback={null}>
+          <PageTransitionLoader />
+        </Suspense>
         {session ? (
           <div className="flex flex-col min-h-screen bg-white">
             <Header session={session} currentShift={currentShift} />
