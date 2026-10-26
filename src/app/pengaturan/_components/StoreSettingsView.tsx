@@ -171,7 +171,7 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-bold text-[#262626] tracking-tight">
-              Pengaturan Toko & Struk
+              Pengaturan Toko
             </h1>
             <span className="px-2 py-0.5 rounded text-[10px] font-semibold text-[#00A250] bg-[#eef8f2] border border-[#b8e8cc]">
               Profil

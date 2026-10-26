@@ -195,7 +195,7 @@ export function WorkReportFeed({
             </span>
           </div>
           <p className="text-xs text-[#757575] mt-0.5">
-            Catatan log aktivitas harian, pesan kasir, dan info serah terima tugas (sinkron dengan aplikasi Android)
+            Catatan log aktivitas harian, pesan kasir, dan info serah terima tugas
           </p>
         </div>
 
