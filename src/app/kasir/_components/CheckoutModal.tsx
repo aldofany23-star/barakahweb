@@ -17,6 +17,7 @@ import {
   Check,
   ChevronDown,
   Layers,
+  Copy,
 } from 'lucide-react'
 
 interface CheckoutModalProps {
@@ -59,6 +60,14 @@ export function CheckoutModal({
   const [splitCashReceivedStr, setSplitCashReceivedStr] = useState<string>('')
   const [isSplitDigital1Paid, setIsSplitDigital1Paid] = useState<boolean>(false)
   const [isSplitDigital2Paid, setIsSplitDigital2Paid] = useState<boolean>(false)
+  const [copiedBank, setCopiedBank] = useState<boolean>(false)
+
+  const handleCopyBank = (text: string) => {
+    if (!text) return
+    navigator.clipboard.writeText(text)
+    setCopiedBank(true)
+    setTimeout(() => setCopiedBank(false), 2000)
+  }
 
   if (!isOpen) return null
 
@@ -726,6 +735,74 @@ export function CheckoutModal({
                     )}
                   </div>
 
+                  {/* Info Preview for Method 1 (QRIS atau Transfer) */}
+                  {splitMethod1 === 'qris' && (
+                    storeProfile?.qris_image_url ? (
+                      <div className="flex items-center justify-between p-2 bg-blue-50/60 rounded-xl border border-blue-200">
+                        <div className="flex items-center gap-2">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={storeProfile.qris_image_url}
+                            alt="QRIS Mini"
+                            className="w-7 h-7 object-contain rounded-md border border-blue-200 bg-white cursor-pointer hover:border-blue-400"
+                            onClick={() => setShowExpandedQris(true)}
+                          />
+                          <div>
+                            <div className="text-[10px] text-gray-500 font-medium">QRIS Merchant:</div>
+                            <div className="font-bold text-xs text-[#262626]">Kode QR Tersedia</div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowExpandedQris(true)}
+                          className="px-2 py-1 text-[10px] font-semibold bg-white border border-blue-200 hover:bg-blue-100 text-blue-700 rounded-md transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                        >
+                          <Maximize2 className="w-3 h-3" />
+                          <span>Perbesar</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="p-2 bg-gray-50 rounded-lg border border-gray-200 text-[10px] text-gray-400 text-center">
+                        Gambar QRIS belum diatur di menu Pengaturan
+                      </div>
+                    )
+                  )}
+
+                  {splitMethod1 === 'transfer' && (
+                    <div className="flex items-center justify-between p-2 bg-purple-50/60 rounded-xl border border-purple-200">
+                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                        <div className="w-7 h-7 rounded-lg bg-white border border-purple-200 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
+                          <CreditCard className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[10px] text-gray-500 font-medium">Rekening Toko:</div>
+                          <div className="font-bold text-xs font-mono text-[#262626] truncate select-all">
+                            {storeProfile?.bank_account_info || 'Belum diatur di Pengaturan'}
+                          </div>
+                        </div>
+                      </div>
+                      {storeProfile?.bank_account_info && (
+                        <button
+                          type="button"
+                          onClick={() => handleCopyBank(storeProfile.bank_account_info!)}
+                          className="px-2 py-1 text-[10px] font-semibold bg-white border border-purple-200 hover:bg-purple-100 text-purple-700 rounded-md transition cursor-pointer shrink-0 flex items-center gap-1 shadow-2xs"
+                        >
+                          {copiedBank ? (
+                            <>
+                              <Check className="w-3 h-3 text-[#00A250]" />
+                              <span>Tersalin</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Salin</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {/* Digital verification for Method 1 if non-cash */}
                   {!isSplitCash1 && (
                     <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
@@ -788,26 +865,71 @@ export function CheckoutModal({
                     </div>
                   </div>
 
-                  {/* QRIS / Transfer info preview for Method 2 or 1 */}
-                  {(splitMethod1 === 'qris' || splitMethod2 === 'qris') && storeProfile?.qris_image_url && (
-                    <div className="flex items-center justify-between p-2 bg-[#fafafa] rounded-lg border border-gray-100">
-                      <div className="flex items-center gap-2">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={storeProfile.qris_image_url}
-                          alt="QRIS Mini"
-                          className="w-7 h-7 object-contain rounded border border-gray-200 bg-white cursor-pointer"
+                  {/* Info Preview for Method 2 (QRIS atau Transfer) */}
+                  {splitMethod2 === 'qris' && (
+                    storeProfile?.qris_image_url ? (
+                      <div className="flex items-center justify-between p-2 bg-blue-50/60 rounded-xl border border-blue-200">
+                        <div className="flex items-center gap-2">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={storeProfile.qris_image_url}
+                            alt="QRIS Mini"
+                            className="w-7 h-7 object-contain rounded-md border border-blue-200 bg-white cursor-pointer hover:border-blue-400"
+                            onClick={() => setShowExpandedQris(true)}
+                          />
+                          <div>
+                            <div className="text-[10px] text-gray-500 font-medium">QRIS Merchant:</div>
+                            <div className="font-bold text-xs text-[#262626]">Kode QR Tersedia</div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
                           onClick={() => setShowExpandedQris(true)}
-                        />
-                        <span className="text-[11px] text-gray-600">Kode QRIS Tersedia</span>
+                          className="px-2 py-1 text-[10px] font-semibold bg-white border border-blue-200 hover:bg-blue-100 text-blue-700 rounded-md transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                        >
+                          <Maximize2 className="w-3 h-3" />
+                          <span>Perbesar</span>
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowExpandedQris(true)}
-                        className="text-[10px] text-[#00A250] font-semibold hover:underline"
-                      >
-                        Perbesar QR
-                      </button>
+                    ) : (
+                      <div className="p-2 bg-gray-50 rounded-lg border border-gray-200 text-[10px] text-gray-400 text-center">
+                        Gambar QRIS belum diatur di menu Pengaturan
+                      </div>
+                    )
+                  )}
+
+                  {splitMethod2 === 'transfer' && (
+                    <div className="flex items-center justify-between p-2 bg-purple-50/60 rounded-xl border border-purple-200">
+                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                        <div className="w-7 h-7 rounded-lg bg-white border border-purple-200 flex items-center justify-center shrink-0 text-purple-600 shadow-2xs">
+                          <CreditCard className="w-3.5 h-3.5" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-[10px] text-gray-500 font-medium">Rekening Toko:</div>
+                          <div className="font-bold text-xs font-mono text-[#262626] truncate select-all">
+                            {storeProfile?.bank_account_info || 'Belum diatur di Pengaturan'}
+                          </div>
+                        </div>
+                      </div>
+                      {storeProfile?.bank_account_info && (
+                        <button
+                          type="button"
+                          onClick={() => handleCopyBank(storeProfile.bank_account_info!)}
+                          className="px-2 py-1 text-[10px] font-semibold bg-white border border-purple-200 hover:bg-purple-100 text-purple-700 rounded-md transition cursor-pointer shrink-0 flex items-center gap-1 shadow-2xs"
+                        >
+                          {copiedBank ? (
+                            <>
+                              <Check className="w-3 h-3 text-[#00A250]" />
+                              <span>Tersalin</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3 h-3" />
+                              <span>Salin</span>
+                            </>
+                          )}
+                        </button>
+                      )}
                     </div>
                   )}
 

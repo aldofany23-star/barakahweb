@@ -351,7 +351,7 @@ export function OrderDetailModal({
                 {order.payment_method?.toLowerCase() === 'split' && order.payment_details?.payments && (
                   <div className="pt-1.5 border-t border-dashed border-gray-300 space-y-1">
                     <div className="text-[11px] font-bold text-black uppercase">
-                      Rincian Pembayaran (Split):
+                      Rincian Pembayaran:
                     </div>
                     {order.payment_details.payments.map((p, pIdx) => {
                       const isCash = String(p.method).toLowerCase() === 'cash'
