@@ -374,7 +374,7 @@ export function CheckoutModal({
                       {[
                         {
                           id: 'cash' as const,
-                          name: 'Tunai (Cash)',
+                          name: 'Tunai',
                           desc: 'Pembayaran uang tunai kasir',
                           icon: Banknote,
                           color: 'emerald',
@@ -699,7 +699,7 @@ export function CheckoutModal({
 
                   <div>
                     <label className="block text-[11px] text-gray-500 mb-1">
-                      Nominal Pembayaran 1 (Rp)
+                      Nominal Pembayaran 1
                     </label>
                     <input
                       type="number"

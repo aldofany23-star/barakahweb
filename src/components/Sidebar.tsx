@@ -334,10 +334,8 @@ export function Sidebar({ session, currentShift }: SidebarProps) {
       <div className="p-3 border-t border-[#e2e2e2] bg-[#fafafa] shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#00A250] animate-pulse" />
-            <span className="text-[11px] font-medium text-gray-600">Development</span>
+            <span className="text-[11px] font-medium text-gray-600">Production</span>
           </div>
-          <span className="text-[10px] text-gray-400">v1.2</span>
         </div>
       </div>
     </>

@@ -218,12 +218,10 @@ export function NewReportModal({ isOpen, onClose, onSuccess }: NewReportModalPro
               rows={4}
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              placeholder="Tuliskan aktivitas shift, kondisi hewan/grooming, stok barang yang hampir habis, atau pesan untuk kasir shift selanjutnya..."
               className="w-full p-3 bg-white border border-[#e2e2e2] rounded-xl text-xs text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none resize-none placeholder:text-gray-400 shadow-2xs"
             />
           </div>
 
-          {/* Photo Attachments (Max 5 photos, mirrors Android) */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="font-semibold text-[#262626]">

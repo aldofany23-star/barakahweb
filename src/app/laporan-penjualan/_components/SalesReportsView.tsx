@@ -171,7 +171,7 @@ export function SalesReportsView({
         const { data } = await supabase
           .from('orders')
           .select(
-            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
+            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at'
           )
           .gte('created_at', sevenDaysAgo)
           .order('created_at', { ascending: false })
@@ -191,7 +191,7 @@ export function SalesReportsView({
         const { data } = await supabase
           .from('orders')
           .select(
-            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
+            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at'
           )
           .gte('created_at', thirtyDaysAgo)
           .order('created_at', { ascending: false })
@@ -215,7 +215,7 @@ export function SalesReportsView({
           const { data, error } = await supabase
             .from('orders')
             .select(
-              'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
+              'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at'
             )
             .order('created_at', { ascending: false })
             .range(from, from + batchSize - 1)
@@ -247,7 +247,7 @@ export function SalesReportsView({
         const { data } = await supabase
           .from('orders')
           .select(
-            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
+            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at'
           )
           .eq('shift_id', shift.id)
           .order('created_at', { ascending: false })
@@ -300,7 +300,7 @@ export function SalesReportsView({
             const { data, error } = await supabase
               .from('orders')
               .select(
-                'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
+                'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at'
               )
               .order('created_at', { ascending: false })
               .range(from, from + batchSize - 1)
@@ -575,9 +575,6 @@ export function SalesReportsView({
             <h1 className="text-xl sm:text-2xl font-bold text-[#262626] tracking-tight">
               Laporan Penjualan
             </h1>
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold text-[#00A250] bg-[#eef8f2] border border-[#b8e8cc]">
-              Rekap Transaksi
-            </span>
           </div>
           <p className="text-xs text-[#757575] mt-0.5">
             Riwayat struk transaksi, filter periode sesi kasir, dan rekap omset toko

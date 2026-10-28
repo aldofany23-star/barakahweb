@@ -582,9 +582,6 @@ export function DiscountView({
             <h1 className="text-xl sm:text-2xl font-bold text-[#262626] tracking-tight">
               Setup Diskon & Bundling
             </h1>
-            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold text-[#00A250] bg-[#eef8f2] border border-[#b8e8cc]">
-              {totalActiveCount} Promo Aktif
-            </span>
           </div>
           <p className="text-xs text-[#757575] mt-1">
             Kelola diskon per produk, paket bundling hemat, serta algoritma rekomendasi anti-rugi
@@ -994,7 +991,6 @@ export function DiscountView({
                       list="active-promo-names"
                       value={singleName}
                       onChange={(e) => setSingleName(e.target.value)}
-                      placeholder="Contoh: Flash Sale Akhir Bulan / Promo Spesial"
                       required
                       className="w-full px-3.5 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-xs text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none placeholder:text-gray-400 shadow-2xs"
                     />
@@ -1128,7 +1124,6 @@ export function DiscountView({
                         min="1"
                         value={singleValue}
                         onChange={(e) => setSingleValue(e.target.value)}
-                        placeholder={singleType === 'nominal' ? 'Contoh: 5000' : 'Contoh: 15'}
                         required
                         className="w-full px-3.5 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-base font-bold text-[#00A250] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none shadow-2xs"
                       />
@@ -1263,7 +1258,6 @@ export function DiscountView({
                       list="active-promo-names"
                       value={bundleName}
                       onChange={(e) => setBundleName(e.target.value)}
-                      placeholder="Contoh: Paket Si Meong / Paket Grooming Hemat"
                       required
                       className="w-full px-3.5 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-xs text-[#262626] focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none placeholder:text-gray-400 shadow-2xs"
                     />
@@ -1362,7 +1356,6 @@ export function DiscountView({
                         min="1"
                         value={bundlePrice}
                         onChange={(e) => setBundlePrice(e.target.value)}
-                        placeholder="Contoh: 45000"
                         required
                         className="w-full px-3.5 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-base font-bold text-blue-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none shadow-2xs"
                       />
@@ -1521,21 +1514,14 @@ export function DiscountView({
           )}
         </div>
       )}
-
-      {/* ============================================================ */}
-      {/* TAB 3: REKOMENDASI (Smart AI Promo Recommendations)          */}
-      {/* ============================================================ */}
       {activeTab === 'recommendations' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="font-bold text-sm sm:text-base text-[#262626] flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>Rekomendasi Cerdas Anti-Rugi</span>
+                <span>Rekomendasi</span>
               </h2>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Peluang promo otomatis berdasarkan margin profit tebal, cuci gudang dead stock, dan subsidi silang bundling.
-              </p>
             </div>
           </div>
 

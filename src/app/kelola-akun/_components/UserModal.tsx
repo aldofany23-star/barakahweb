@@ -170,7 +170,6 @@ export function UserModal({ user, isOpen, onClose, isOwnerLoggedIn: _isOwnerLogg
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Contoh: Anip Nur Halimah"
               className="w-full px-3 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-xs text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none placeholder:text-gray-400 shadow-2xs"
             />
           </div>
@@ -185,7 +184,6 @@ export function UserModal({ user, isOpen, onClose, isOwnerLoggedIn: _isOwnerLogg
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Contoh: anip atau kasir1@pos.com"
                 className="w-full px-3 py-2.5 bg-white border border-[#e2e2e2] rounded-xl text-xs text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none placeholder:text-gray-400 shadow-2xs"
               />
             </div>

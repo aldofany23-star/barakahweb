@@ -87,9 +87,6 @@ export function UserManagementView({
             <h1 className="text-xl sm:text-2xl font-bold text-[#262626] tracking-tight">
               Kelola Akun & Hak Akses
             </h1>
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold text-[#00A250] bg-[#eef8f2] border border-[#b8e8cc]">
-              Pengguna
-            </span>
           </div>
           <p className="text-xs text-[#757575] mt-0.5">
             Manajemen akun kasir, staf toko, dan pembatasan akses menu

@@ -339,11 +339,11 @@ export function OrderDetailModal({
                   <>
                     <div className="flex justify-between text-black">
                       <span>TUNAI</span>
-                      <span>{formatRupiah(order.cash_amount)}</span>
+                      <span>{formatRupiah(order.cash_amount != null ? order.cash_amount : total)}</span>
                     </div>
                     <div className="flex justify-between text-black font-semibold">
                       <span>KEMBALI</span>
-                      <span>{formatRupiah(order.change_amount)}</span>
+                      <span>{formatRupiah(order.change_amount != null ? order.change_amount : 0)}</span>
                     </div>
                   </>
                 )}

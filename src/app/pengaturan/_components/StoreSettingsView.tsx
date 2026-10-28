@@ -173,9 +173,6 @@ export function StoreSettingsView({ initialProfile }: StoreSettingsViewProps) {
             <h1 className="text-xl sm:text-2xl font-bold text-[#262626] tracking-tight">
               Pengaturan Toko
             </h1>
-            <span className="px-2 py-0.5 rounded text-[10px] font-semibold text-[#00A250] bg-[#eef8f2] border border-[#b8e8cc]">
-              Profil
-            </span>
           </div>
           <p className="text-xs text-[#757575] mt-0.5">
             Identitas toko untuk cetak struk kasir, rekening pembayaran, dan QRIS

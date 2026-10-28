@@ -73,7 +73,7 @@ export default async function DashboardPage() {
       fetchAllSince<Order>(
         supabase,
         'orders',
-        'id, shift_id, user_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at',
+        'id, shift_id, user_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at',
         sinceIso
       ),
 

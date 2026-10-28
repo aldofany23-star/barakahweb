@@ -24,7 +24,7 @@ export default async function SalesReportsPage() {
     supabase
       .from('orders')
       .select(
-        'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
+        'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at'
       )
       .gte('created_at', todayStart)
       .order('created_at', { ascending: false }),
@@ -41,7 +41,7 @@ export default async function SalesReportsPage() {
     const { data: recentOrders } = await supabase
       .from('orders')
       .select(
-        'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
+        'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at'
       )
       .order('created_at', { ascending: false })
       .limit(50)

@@ -47,7 +47,7 @@ export function LoginForm() {
             name="identifier"
             required
             autoFocus
-            placeholder="barakahfauna@admin.com / nama staf"
+            placeholder="Email / Username"
             className="w-full px-4 py-3 bg-white border border-[#E5E7EB] rounded-lg text-sm text-[#1E1E1E] focus:outline-none focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] transition"
           />
         </div>
