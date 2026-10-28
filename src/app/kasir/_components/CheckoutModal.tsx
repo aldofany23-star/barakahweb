@@ -44,6 +44,7 @@ export function CheckoutModal({
 }: CheckoutModalProps) {
   const [isPending, startTransition] = useTransition()
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'qris' | 'transfer' | 'split'>('cash')
+  const [isMethodDropdownOpen, setIsMethodDropdownOpen] = useState<boolean>(false)
   const [cashAmountStr, setCashAmountStr] = useState<string>('')
   const [isDigitalPaymentPaid, setIsDigitalPaymentPaid] = useState<boolean>(false)
   const [showExpandedQris, setShowExpandedQris] = useState<boolean>(false)
@@ -311,19 +312,133 @@ export function CheckoutModal({
                 )}
               </div>
 
-              {/* Dropdown Selector */}
+              {/* Modern Custom Dropdown Selector (No Emoticons, Modern Vector Icons) */}
               <div className="relative mb-2">
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => handleMethodChange(e.target.value as any)}
-                  className="w-full px-3 py-2 bg-white border border-[#e2e2e2] rounded-xl text-xs font-bold text-[#262626] focus:border-[#00A250] focus:ring-1 focus:ring-[#00A250] focus:outline-none shadow-2xs appearance-none cursor-pointer pr-8"
+                <button
+                  type="button"
+                  onClick={() => setIsMethodDropdownOpen(!isMethodDropdownOpen)}
+                  className="w-full px-3 py-2 bg-white border border-[#e2e2e2] hover:border-[#00A250] rounded-xl text-xs font-semibold text-[#262626] focus:outline-none shadow-2xs flex items-center justify-between transition cursor-pointer"
                 >
-                  <option value="cash">💵 Tunai (Cash)</option>
-                  <option value="qris">📱 QRIS Digital</option>
-                  <option value="transfer">💳 Transfer Bank</option>
-                  <option value="split">🔀 Split Pembayaran (Kombinasi 2 Metode)</option>
-                </select>
-                <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <div className="flex items-center gap-2">
+                    {paymentMethod === 'cash' && (
+                      <div className="w-6 h-6 rounded-lg bg-emerald-50 text-[#00A250] border border-emerald-200 flex items-center justify-center shrink-0">
+                        <Banknote className="w-3.5 h-3.5" />
+                      </div>
+                    )}
+                    {paymentMethod === 'qris' && (
+                      <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center shrink-0">
+                        <QrCode className="w-3.5 h-3.5" />
+                      </div>
+                    )}
+                    {paymentMethod === 'transfer' && (
+                      <div className="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 border border-purple-200 flex items-center justify-center shrink-0">
+                        <CreditCard className="w-3.5 h-3.5" />
+                      </div>
+                    )}
+                    {paymentMethod === 'split' && (
+                      <div className="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 border border-amber-200 flex items-center justify-center shrink-0">
+                        <Layers className="w-3.5 h-3.5" />
+                      </div>
+                    )}
+                    <span className="font-bold text-xs text-[#262626]">
+                      {paymentMethod === 'cash' && 'Tunai (Cash)'}
+                      {paymentMethod === 'qris' && 'QRIS Digital'}
+                      {paymentMethod === 'transfer' && 'Transfer Bank'}
+                      {paymentMethod === 'split' && 'Split Pembayaran (2 Metode)'}
+                    </span>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                      isMethodDropdownOpen ? 'rotate-180 text-[#00A250]' : ''
+                    }`}
+                  />
+                </button>
+
+                {/* Popover Dropdown Menu */}
+                {isMethodDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-30"
+                      onClick={() => setIsMethodDropdownOpen(false)}
+                    />
+                    <div className="absolute top-full left-0 right-0 mt-1.5 bg-white border border-[#e2e2e2] rounded-xl shadow-xl z-40 p-1.5 space-y-1 animate-in fade-in zoom-in-95 duration-100">
+                      {[
+                        {
+                          id: 'cash' as const,
+                          name: 'Tunai (Cash)',
+                          desc: 'Pembayaran uang tunai kasir',
+                          icon: Banknote,
+                          color: 'emerald',
+                        },
+                        {
+                          id: 'qris' as const,
+                          name: 'QRIS Digital',
+                          desc: 'Scan barcode QRIS merchant',
+                          icon: QrCode,
+                          color: 'blue',
+                        },
+                        {
+                          id: 'transfer' as const,
+                          name: 'Transfer Bank',
+                          desc: 'Transfer ke rekening toko',
+                          icon: CreditCard,
+                          color: 'purple',
+                        },
+                        {
+                          id: 'split' as const,
+                          name: 'Split Pembayaran',
+                          desc: 'Kombinasi 2 metode (pecah nominal)',
+                          icon: Layers,
+                          color: 'amber',
+                        },
+                      ].map((item) => {
+                        const Icon = item.icon
+                        const isSelected = paymentMethod === item.id
+                        return (
+                          <div
+                            key={item.id}
+                            onClick={() => {
+                              handleMethodChange(item.id)
+                              setIsMethodDropdownOpen(false)
+                            }}
+                            className={`p-2 rounded-lg flex items-center justify-between cursor-pointer transition ${
+                              isSelected
+                                ? 'bg-[#eef8f2] text-[#00A250]'
+                                : 'hover:bg-gray-50 text-gray-700'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5">
+                              <div
+                                className={`w-7 h-7 rounded-lg flex items-center justify-center border ${
+                                  item.color === 'emerald'
+                                    ? 'bg-emerald-50 text-[#00A250] border-emerald-200'
+                                    : item.color === 'blue'
+                                    ? 'bg-blue-50 text-blue-600 border-blue-200'
+                                    : item.color === 'purple'
+                                    ? 'bg-purple-50 text-purple-600 border-purple-200'
+                                    : 'bg-amber-50 text-amber-600 border-amber-200'
+                                }`}
+                              >
+                                <Icon className="w-4 h-4" />
+                              </div>
+                              <div className="text-left">
+                                <div className="text-xs font-bold text-[#262626]">
+                                  {item.name}
+                                </div>
+                                <div className="text-[10px] text-gray-400">
+                                  {item.desc}
+                                </div>
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <Check className="w-4 h-4 text-[#00A250] shrink-0" />
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Quick Tab Selector (Cash, QRIS, Transfer, Split) */}
@@ -546,15 +661,31 @@ export function CheckoutModal({
                     <span className="text-[11px] font-bold text-gray-700 uppercase tracking-wide">
                       Pembayaran 1
                     </span>
-                    <select
-                      value={splitMethod1}
-                      onChange={(e) => handleSplitMethod1Change(e.target.value as any)}
-                      className="text-xs font-semibold text-[#00A250] bg-[#eef8f2] border border-[#b8e8cc] rounded-lg px-2 py-1 focus:outline-none cursor-pointer"
-                    >
-                      <option value="cash">💵 Tunai (Cash)</option>
-                      <option value="qris">📱 QRIS</option>
-                      <option value="transfer">💳 Transfer</option>
-                    </select>
+                    <div className="flex items-center gap-1 bg-[#f3f4f6] p-0.5 rounded-lg border border-[#e5e7eb]">
+                      {[
+                        { id: 'cash' as const, label: 'Cash', icon: Banknote, activeText: 'text-[#00A250]' },
+                        { id: 'qris' as const, label: 'QRIS', icon: QrCode, activeText: 'text-blue-600' },
+                        { id: 'transfer' as const, label: 'Transfer', icon: CreditCard, activeText: 'text-purple-600' },
+                      ].map((m) => {
+                        const Icon = m.icon
+                        const isSelected = splitMethod1 === m.id
+                        return (
+                          <button
+                            key={m.id}
+                            type="button"
+                            onClick={() => handleSplitMethod1Change(m.id)}
+                            className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer ${
+                              isSelected
+                                ? `bg-white ${m.activeText} shadow-xs font-bold`
+                                : 'text-gray-500 hover:text-gray-800'
+                            }`}
+                          >
+                            <Icon className="w-3 h-3" />
+                            <span>{m.label}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
 
                   <div>
@@ -620,15 +751,31 @@ export function CheckoutModal({
                     <span className="text-[11px] font-bold text-gray-700 uppercase tracking-wide">
                       Pembayaran 2 (Sisa Tagihan)
                     </span>
-                    <select
-                      value={splitMethod2}
-                      onChange={(e) => handleSplitMethod2Change(e.target.value as any)}
-                      className="text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-2 py-1 focus:outline-none cursor-pointer"
-                    >
-                      <option value="qris">📱 QRIS</option>
-                      <option value="transfer">💳 Transfer</option>
-                      <option value="cash">💵 Tunai (Cash)</option>
-                    </select>
+                    <div className="flex items-center gap-1 bg-[#f3f4f6] p-0.5 rounded-lg border border-[#e5e7eb]">
+                      {[
+                        { id: 'qris' as const, label: 'QRIS', icon: QrCode, activeText: 'text-blue-600' },
+                        { id: 'transfer' as const, label: 'Transfer', icon: CreditCard, activeText: 'text-purple-600' },
+                        { id: 'cash' as const, label: 'Cash', icon: Banknote, activeText: 'text-[#00A250]' },
+                      ].map((m) => {
+                        const Icon = m.icon
+                        const isSelected = splitMethod2 === m.id
+                        return (
+                          <button
+                            key={m.id}
+                            type="button"
+                            onClick={() => handleSplitMethod2Change(m.id)}
+                            className={`px-2 py-1 rounded-md text-[11px] font-semibold flex items-center gap-1 transition cursor-pointer ${
+                              isSelected
+                                ? `bg-white ${m.activeText} shadow-xs font-bold`
+                                : 'text-gray-500 hover:text-gray-800'
+                            }`}
+                          >
+                            <Icon className="w-3 h-3" />
+                            <span>{m.label}</span>
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
 
                   <div>

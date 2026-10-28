@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   Loader2,
+  Layers,
 } from 'lucide-react'
 
 interface SalesReportsViewProps {
@@ -1056,13 +1057,37 @@ export function SalesReportsView({
                             </td>
                             <td className="py-3.5 px-4 align-middle">
                               <span
-                                className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold uppercase border ${badgeClass}`}
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase border shadow-2xs ${badgeClass}`}
                               >
-                                {order.payment_method}
+                                {method === 'cash' || method === 'tunai' ? (
+                                  <Banknote className="w-3.5 h-3.5 text-[#00A250]" />
+                                ) : method === 'qris' ? (
+                                  <QrCode className="w-3.5 h-3.5 text-blue-600" />
+                                ) : method === 'transfer' ? (
+                                  <CreditCard className="w-3.5 h-3.5 text-purple-600" />
+                                ) : (
+                                  <Layers className="w-3.5 h-3.5 text-amber-600" />
+                                )}
+                                <span>{order.payment_method}</span>
                               </span>
                               {order.payment_method?.toLowerCase() === 'split' && order.payment_details?.payments && (
-                                <div className="text-[10px] text-gray-500 mt-0.5 font-sans">
-                                  {order.payment_details.payments.map((p) => `${p.method.toUpperCase()}: ${formatRupiah(p.amount)}`).join(' + ')}
+                                <div className="text-[10px] text-gray-500 mt-1 font-sans flex flex-wrap gap-1">
+                                  {order.payment_details.payments.map((p, i) => (
+                                    <span
+                                      key={i}
+                                      className="inline-flex items-center gap-1 bg-gray-50 border border-gray-200 px-1.5 py-0.5 rounded text-[10px]"
+                                    >
+                                      {String(p.method).toLowerCase() === 'cash' ? (
+                                        <Banknote className="w-2.5 h-2.5 text-green-600" />
+                                      ) : String(p.method).toLowerCase() === 'qris' ? (
+                                        <QrCode className="w-2.5 h-2.5 text-blue-600" />
+                                      ) : (
+                                        <CreditCard className="w-2.5 h-2.5 text-purple-600" />
+                                      )}
+                                      <span className="font-semibold uppercase">{p.method}</span>:{' '}
+                                      {formatRupiah(p.amount)}
+                                    </span>
+                                  ))}
                                 </div>
                               )}
                             </td>
