@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getSession } from '@/lib/session'
 import { getActiveShift } from '@/lib/actions/shiftActions'
-import { CartItem, Order, OrderItem, Product } from '@/types/database'
+import { CartItem, Order, OrderItem, Product, PaymentDetails } from '@/types/database'
 import { revalidatePath } from 'next/cache'
 
 export interface CheckoutInput {
@@ -15,6 +15,7 @@ export interface CheckoutInput {
   cashAmount: number
   changeAmount: number
   tableNumber?: string
+  paymentDetails?: PaymentDetails | null
 }
 
 export async function createOrderAction(input: CheckoutInput) {
@@ -52,6 +53,7 @@ export async function createOrderAction(input: CheckoutInput) {
         custom_discount: input.customDiscount,
         cash_amount: input.cashAmount,
         change_amount: input.changeAmount,
+        payment_details: input.paymentDetails || null,
       })
       .select()
       .single()

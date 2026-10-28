@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getSession } from '@/lib/session'
 import { Shift, Order } from '@/types/database'
+import { getOrderPaymentBreakdown } from '@/lib/utils'
 import { revalidatePath } from 'next/cache'
 
 export async function getActiveShift(): Promise<Shift | null> {
@@ -75,15 +76,17 @@ export async function getShiftSummary(shiftId: string) {
 
   const typedOrders = orders as Order[]
   const totalRevenue = typedOrders.reduce((sum, o) => sum + (o.total || 0), 0)
-  const cashRevenue = typedOrders
-    .filter((o) => o.payment_method?.toLowerCase() === 'cash' || o.payment_method?.toLowerCase() === 'tunai')
-    .reduce((sum, o) => sum + (o.total || 0), 0)
-  const qrisRevenue = typedOrders
-    .filter((o) => o.payment_method?.toLowerCase() === 'qris')
-    .reduce((sum, o) => sum + (o.total || 0), 0)
-  const transferRevenue = typedOrders
-    .filter((o) => o.payment_method?.toLowerCase() === 'transfer')
-    .reduce((sum, o) => sum + (o.total || 0), 0)
+  
+  let cashRevenue = 0
+  let qrisRevenue = 0
+  let transferRevenue = 0
+
+  for (const o of typedOrders) {
+    const bd = getOrderPaymentBreakdown(o)
+    cashRevenue += bd.cash
+    qrisRevenue += bd.qris
+    transferRevenue += bd.transfer
+  }
 
   return {
     totalRevenue,

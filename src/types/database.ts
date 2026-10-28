@@ -85,6 +85,19 @@ export interface Shift {
   profile?: { name: string } | null
 }
 
+export interface PaymentSplitItem {
+  method: 'cash' | 'qris' | 'transfer'
+  amount: number
+  cash_received?: number
+  change?: number
+  is_paid?: boolean
+}
+
+export interface PaymentDetails {
+  type: 'split' | 'single'
+  payments: PaymentSplitItem[]
+}
+
 export interface Order {
   id: string
   shift_id?: string | null
@@ -96,11 +109,12 @@ export interface Order {
   subtotal: number
   tax: number
   total: number
-  payment_method: 'cash' | 'transfer' | 'qris' | string
+  payment_method: 'cash' | 'transfer' | 'qris' | 'split' | string
   status: 'pending' | 'completed' | 'cancelled' | string
   custom_discount: number
   cash_amount: number
   change_amount: number
+  payment_details?: PaymentDetails | null
   created_at: string
   order_items?: OrderItem[]
 }

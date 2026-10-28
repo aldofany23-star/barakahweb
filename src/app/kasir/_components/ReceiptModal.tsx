@@ -246,6 +246,37 @@ export function ReceiptModal({
                     </div>
                   </>
                 )}
+
+                {order.payment_method?.toLowerCase() === 'split' && order.payment_details?.payments && (
+                  <div className="pt-1.5 border-t border-dashed border-gray-300 space-y-1">
+                    <div className="text-[10px] font-bold text-black uppercase">
+                      Rincian Pembayaran (Split):
+                    </div>
+                    {order.payment_details.payments.map((p, pIdx) => {
+                      const isCash = String(p.method).toLowerCase() === 'cash'
+                      return (
+                        <div key={pIdx} className="space-y-0.5">
+                          <div className="flex justify-between text-black">
+                            <span>- {String(p.method).toUpperCase()}</span>
+                            <span className="font-medium">{formatRupiah(p.amount)}</span>
+                          </div>
+                          {isCash && p.cash_received && p.cash_received > 0 ? (
+                            <div className="text-[10px] text-gray-600 pl-2">
+                              Diterima: {formatRupiah(p.cash_received)}
+                              {p.change != null && p.change > 0 ? ` • Kembali: ${formatRupiah(p.change)}` : ''}
+                            </div>
+                          ) : null}
+                        </div>
+                      )
+                    })}
+                    {order.change_amount > 0 && (
+                      <div className="flex justify-between text-black font-semibold pt-0.5">
+                        <span>TOTAL KEMBALI</span>
+                        <span>{formatRupiah(order.change_amount)}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Dashed line */}

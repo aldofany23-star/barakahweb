@@ -12,7 +12,7 @@ import {
   Profile,
 } from '@/types/database'
 import { UserSession } from '@/lib/session'
-import { formatRupiah, formatDateTime } from '@/lib/utils'
+import { formatRupiah, formatDateTime, getOrderPaymentBreakdown, formatPaymentMethodLabel } from '@/lib/utils'
 import { OrderDetailModal } from '@/app/laporan-penjualan/_components/OrderDetailModal'
 import {
   RotateCw,
@@ -184,32 +184,28 @@ export function DashboardView({
     const potensiUntung = valuasiJual - valuasiBeli
 
     // Breakdown Metode Pembayaran
-    const cashRevenue = completedOrders
-      .filter((o) => o.payment_method?.toLowerCase() === 'cash')
-      .reduce((s, o) => s + (o.total || 0), 0)
-    const cashCount = completedOrders.filter(
-      (o) => o.payment_method?.toLowerCase() === 'cash'
-    ).length
+    let cashRevenue = 0
+    let cashCount = 0
+    let qrisRevenue = 0
+    let qrisCount = 0
+    let transferRevenue = 0
+    let transferCount = 0
 
-    const qrisRevenue = completedOrders
-      .filter((o) => o.payment_method?.toLowerCase() === 'qris')
-      .reduce((s, o) => s + (o.total || 0), 0)
-    const qrisCount = completedOrders.filter(
-      (o) => o.payment_method?.toLowerCase() === 'qris'
-    ).length
-
-    const transferRevenue = completedOrders
-      .filter(
-        (o) =>
-          o.payment_method?.toLowerCase() === 'transfer' ||
-          o.payment_method?.toLowerCase() === 'card'
-      )
-      .reduce((s, o) => s + (o.total || 0), 0)
-    const transferCount = completedOrders.filter(
-      (o) =>
-        o.payment_method?.toLowerCase() === 'transfer' ||
-        o.payment_method?.toLowerCase() === 'card'
-    ).length
+    completedOrders.forEach((o) => {
+      const bd = getOrderPaymentBreakdown(o)
+      if (bd.cash > 0) {
+        cashRevenue += bd.cash
+        cashCount++
+      }
+      if (bd.qris > 0) {
+        qrisRevenue += bd.qris
+        qrisCount++
+      }
+      if (bd.transfer > 0) {
+        transferRevenue += bd.transfer
+        transferCount++
+      }
+    })
 
     // Rata-rata per struk
     const averageOrderValue =
@@ -306,10 +302,10 @@ export function DashboardView({
       entry.orderCount += 1
       entry.totalRevenue += o.total || 0
 
-      const method = o.payment_method?.toLowerCase()
-      if (method === 'cash') entry.cashTotal += o.total || 0
-      else if (method === 'qris') entry.qrisTotal += o.total || 0
-      else entry.transferTotal += o.total || 0
+      const bd = getOrderPaymentBreakdown(o)
+      entry.cashTotal += bd.cash
+      entry.qrisTotal += bd.qris
+      entry.transferTotal += bd.transfer
     })
 
     // Hitung rata-rata dan kontribusi
@@ -360,8 +356,24 @@ export function DashboardView({
 
       // Filter Metode Pembayaran
       if (paymentFilter !== 'all') {
-        if (order.payment_method?.toLowerCase() !== paymentFilter.toLowerCase()) {
-          return false
+        const method = order.payment_method?.toLowerCase()
+        if (paymentFilter === 'split') {
+          if (method !== 'split') return false
+        } else if (paymentFilter === 'cash') {
+          if (method !== 'cash' && method !== 'tunai') {
+            const bd = getOrderPaymentBreakdown(order)
+            if (bd.cash <= 0) return false
+          }
+        } else if (paymentFilter === 'qris') {
+          if (method !== 'qris') {
+            const bd = getOrderPaymentBreakdown(order)
+            if (bd.qris <= 0) return false
+          }
+        } else if (paymentFilter === 'transfer') {
+          if (method !== 'transfer' && method !== 'card') {
+            const bd = getOrderPaymentBreakdown(order)
+            if (bd.transfer <= 0) return false
+          }
         }
       }
 
@@ -494,7 +506,7 @@ export function DashboardView({
           o.order_number,
           o.cashier_name || 'Kasir',
           o.table_number || 'Umum',
-          (o.payment_method || 'CASH').toUpperCase(),
+          formatPaymentMethodLabel(o),
           'SELESAI',
           o.total,
         ])
@@ -1173,6 +1185,7 @@ export function DashboardView({
               <option value="cash">Tunai (Cash)</option>
               <option value="qris">QRIS Digital</option>
               <option value="transfer">Transfer Bank</option>
+              <option value="split">Split Pembayaran</option>
             </select>
 
             {/* Clear filters button if active */}
@@ -1257,7 +1270,9 @@ export function DashboardView({
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : order.payment_method?.toLowerCase() === 'qris'
                             ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : order.payment_method?.toLowerCase() === 'split'
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-purple-50 text-purple-700 border border-purple-200'
                         }`}
                       >
                         {order.payment_method}

@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { Order, Shift, StoreProfile } from '@/types/database'
 import { OrderDetailModal } from './OrderDetailModal'
-import { formatRupiah, formatDateTime } from '@/lib/utils'
+import { formatRupiah, formatDateTime, getOrderPaymentBreakdown, formatPaymentMethodLabel } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import ExcelJS from 'exceljs'
 import {
@@ -96,34 +96,38 @@ export function SalesReportsView({
         : 0
     const count = filteredOrders.length
 
-    const cashOrders = filteredOrders.filter(
-      (o) =>
-        o.payment_method?.toLowerCase() === 'cash' ||
-        o.payment_method?.toLowerCase() === 'tunai'
-    )
-    const qrisOrders = filteredOrders.filter(
-      (o) => o.payment_method?.toLowerCase() === 'qris'
-    )
-    const transferOrders = filteredOrders.filter(
-      (o) => o.payment_method?.toLowerCase() === 'transfer'
-    )
+    let cashRevenue = 0
+    let qrisRevenue = 0
+    let transferRevenue = 0
+    let cashCount = 0
+    let qrisCount = 0
+    let transferCount = 0
 
-    const cashRevenue = cashOrders.reduce((s, o) => s + (o.total || 0), 0)
-    const qrisRevenue = qrisOrders.reduce((s, o) => s + (o.total || 0), 0)
-    const transferRevenue = transferOrders.reduce(
-      (s, o) => s + (o.total || 0),
-      0
-    )
+    for (const o of filteredOrders) {
+      const bd = getOrderPaymentBreakdown(o)
+      if (bd.cash > 0) {
+        cashRevenue += bd.cash
+        cashCount++
+      }
+      if (bd.qris > 0) {
+        qrisRevenue += bd.qris
+        qrisCount++
+      }
+      if (bd.transfer > 0) {
+        transferRevenue += bd.transfer
+        transferCount++
+      }
+    }
 
     return {
       totalOmset,
       count,
       cashRevenue,
-      cashCount: cashOrders.length,
+      cashCount,
       qrisRevenue,
-      qrisCount: qrisOrders.length,
+      qrisCount,
       transferRevenue,
-      transferCount: transferOrders.length,
+      transferCount,
     }
   }, [filteredOrders, dateFilter, currentShift])
 
@@ -166,7 +170,7 @@ export function SalesReportsView({
         const { data } = await supabase
           .from('orders')
           .select(
-            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, created_at'
+            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
           )
           .gte('created_at', sevenDaysAgo)
           .order('created_at', { ascending: false })
@@ -186,7 +190,7 @@ export function SalesReportsView({
         const { data } = await supabase
           .from('orders')
           .select(
-            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, created_at'
+            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
           )
           .gte('created_at', thirtyDaysAgo)
           .order('created_at', { ascending: false })
@@ -210,7 +214,7 @@ export function SalesReportsView({
           const { data, error } = await supabase
             .from('orders')
             .select(
-              'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, created_at'
+              'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
             )
             .order('created_at', { ascending: false })
             .range(from, from + batchSize - 1)
@@ -242,7 +246,7 @@ export function SalesReportsView({
         const { data } = await supabase
           .from('orders')
           .select(
-            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, created_at'
+            'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
           )
           .eq('shift_id', shift.id)
           .order('created_at', { ascending: false })
@@ -295,7 +299,7 @@ export function SalesReportsView({
             const { data, error } = await supabase
               .from('orders')
               .select(
-                'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, created_at'
+                'id, shift_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, payment_details, created_at'
               )
               .order('created_at', { ascending: false })
               .range(from, from + batchSize - 1)
@@ -316,7 +320,7 @@ export function SalesReportsView({
           created_at: o.created_at,
           cashier_name: o.cashier_name,
           table_number: o.table_number,
-          payment_method: o.payment_method,
+          payment_method: formatPaymentMethodLabel(o),
           custom_discount: o.custom_discount || 0,
           setupPromoDiscount: 0,
           total: o.total || 0,
@@ -338,7 +342,7 @@ export function SalesReportsView({
             created_at: o.created_at,
             cashier_name: o.cashier_name,
             table_number: o.table_number,
-            payment_method: o.payment_method,
+            payment_method: formatPaymentMethodLabel(o),
             custom_discount: o.custom_discount || 0,
             setupPromoDiscount,
             total: o.total || 0,
@@ -1021,6 +1025,8 @@ export function SalesReportsView({
                             ? 'bg-blue-50 text-blue-700 border-blue-200'
                             : method === 'transfer'
                             ? 'bg-purple-50 text-purple-700 border-purple-200'
+                            : method === 'split'
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
                             : 'bg-gray-100 text-gray-700 border-gray-200'
 
                         return (
@@ -1054,6 +1060,11 @@ export function SalesReportsView({
                               >
                                 {order.payment_method}
                               </span>
+                              {order.payment_method?.toLowerCase() === 'split' && order.payment_details?.payments && (
+                                <div className="text-[10px] text-gray-500 mt-0.5 font-sans">
+                                  {order.payment_details.payments.map((p) => `${p.method.toUpperCase()}: ${formatRupiah(p.amount)}`).join(' + ')}
+                                </div>
+                              )}
                             </td>
                             <td className="py-3.5 px-4 align-middle">
                               {totalDiscount > 0 ? (
