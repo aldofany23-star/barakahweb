@@ -10,9 +10,6 @@ export const metadata = {
 
 export default async function SalesReportsPage() {
   const supabase = await createClient()
-
-  // Ambil hanya data awal yang diperlukan (Today + Shifts + StoreProfile)
-  // Menjaga kuota egress Supabase Free Tier tetap sangat hemat (~30 KB per visit)
   const now = new Date()
   const todayStart = new Date(
     now.getFullYear(),
@@ -34,8 +31,6 @@ export default async function SalesReportsPage() {
       .order('created_at', { ascending: false }),
     supabase.from('store_profile').select('*').limit(1).maybeSingle(),
   ])
-
-  // Fallback: Jika hari ini toko belum ada transaksi, ambil 50 order terakhir agar tampilan awal langsung aktif
   let initialOrders = (ordersRes.data as Order[]) || []
   if (initialOrders.length === 0) {
     const { data: recentOrders } = await supabase

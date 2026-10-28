@@ -8,25 +8,17 @@ export const metadata = {
 
 export default async function DiscountPage() {
   const supabase = await createClient()
-
-  // Ambil semua diskon dengan relasi produk
   const { data: discountsData } = await supabase
     .from('discounts')
     .select('*, product:products(*)')
     .order('created_at', { ascending: false })
-
-  // Ambil semua paket bundling
   const { data: bundlesData } = await supabase
     .from('bundles')
     .select('*')
     .order('created_at', { ascending: false })
-
-  // Ambil semua item bundle beserta produknya
   const { data: bundleItemsData } = await supabase
     .from('bundle_items')
     .select('*, product:products(*)')
-
-  // Ambil semua produk aktif
   const { data: productsData } = await supabase
     .from('products')
     .select('*')

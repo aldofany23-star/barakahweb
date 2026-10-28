@@ -14,8 +14,6 @@ export default async function WorkReportPage() {
     createClient(),
     getSession(),
   ])
-
-  // Urutkan seperti Android: is_pinned DESC, created_at DESC
   const { data: reportsData } = await supabase
     .from('work_reports')
     .select('*')

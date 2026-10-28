@@ -9,40 +9,28 @@ export const metadata = {
 
 export default async function CashierPage() {
   const supabase = await createClient()
-
-  // Ambil data produk aktif halaman pertama (16 item) secara hemat database
   const { data: productsData, count: totalProductsCount } = await supabase
     .from('products')
     .select('*, category:categories(*)', { count: 'exact' })
     .eq('is_deleted', false)
     .order('name', { ascending: true })
     .range(0, 15)
-
-  // Ambil data kategori
   const { data: categoriesData } = await supabase
     .from('categories')
     .select('*')
     .order('name', { ascending: true })
-
-  // Ambil diskon aktif
   const { data: discountsData } = await supabase
     .from('discounts')
     .select('*')
     .eq('is_active', true)
-
-  // Ambil paket bundling aktif
   const { data: bundlesData } = await supabase
     .from('bundles')
     .select('*')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
-
-  // Ambil item produk dalam bundle
   const { data: bundleItemsData } = await supabase
     .from('bundle_items')
     .select('*, product:products(*)')
-
-  // Ambil profil toko untuk cetak struk & QRIS
   const { data: storeProfileData } = await supabase
     .from('store_profile')
     .select('*')

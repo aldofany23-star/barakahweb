@@ -20,6 +20,16 @@ export const dynamic = 'force-dynamic'
 export const metadata: Metadata = {
   title: 'Barakah Fauna POS - Sistem Kasir Modern',
   description: 'Web Point of Sale untuk Barakah Fauna Petshop',
+  icons: {
+    icon: [
+      { url: '/icon-128.png', sizes: '128x128', type: 'image/png' },
+      { url: '/icon-64.png', sizes: '64x64', type: 'image/png' },
+      { url: '/icon-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: [{ url: '/apple-icon.png', sizes: '128x128', type: 'image/png' }],
+  },
 }
 
 export default async function RootLayout({

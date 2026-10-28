@@ -18,8 +18,6 @@ export async function createDiscountAction(data: {
   if (!session) return { success: false, error: 'Unauthorized' }
 
   const supabase = await createClient()
-
-  // Ambil data produk untuk validasi anti-rugi
   const { data: prod } = await supabase
     .from('products')
     .select('*')
@@ -27,8 +25,6 @@ export async function createDiscountAction(data: {
     .single()
 
   if (!prod) return { success: false, error: 'Produk tidak ditemukan' }
-
-  // Validasi anti-rugi seperti di Android (DiscountViewModel.kt:135-145)
   const projectedPrice =
     data.type === 'nominal'
       ? prod.sell_price - data.value
@@ -40,8 +36,6 @@ export async function createDiscountAction(data: {
       error: `VALIDASI GAGAL: Diskon mengakibatkan harga jual (${formatRupiah(projectedPrice)}) di bawah atau sama dengan harga modal (${formatRupiah(prod.buy_price)}). Potensi kerugian!`,
     }
   }
-
-  // Hitung tanggal mulai dan berakhir (default durationDays atau tanggal yang diberikan)
   let startIso = data.startDate
   let endIso = data.endDate
 
@@ -139,8 +133,6 @@ export async function createBundleAction(data: {
   }
 
   const supabase = await createClient()
-
-  // Ambil data produk untuk hitung total buy price
   const productIds = data.items.map((i) => i.productId)
   const { data: prods } = await supabase
     .from('products')
@@ -157,7 +149,6 @@ export async function createBundleAction(data: {
     }
   }
 
-  // Validasi anti-rugi seperti di Android (DiscountViewModel.kt:181-184)
   if (data.bundlePrice <= totalBuyPrice) {
     return {
       success: false,
@@ -165,7 +156,6 @@ export async function createBundleAction(data: {
     }
   }
 
-  // Hitung tanggal
   let startIso = data.startDate
   let endIso = data.endDate
 
@@ -178,7 +168,6 @@ export async function createBundleAction(data: {
     endIso = future.toISOString()
   }
 
-  // 1. Insert Bundle
   const { data: newBundle, error: bundleErr } = await supabase
     .from('bundles')
     .insert({
@@ -195,7 +184,6 @@ export async function createBundleAction(data: {
     return { success: false, error: bundleErr?.message || 'Gagal menyimpan bundling' }
   }
 
-  // 2. Insert Bundle Items
   const bundleItemsPayload = data.items.map((item) => ({
     bundle_id: newBundle.id,
     product_id: item.productId,
@@ -237,8 +225,6 @@ export async function deleteBundleAction(bundleId: string) {
   if (!session) return { success: false, error: 'Unauthorized' }
 
   const supabase = await createClient()
-
-  // Hapus relasi bundle_items terlebih dahulu
   await supabase.from('bundle_items').delete().eq('bundle_id', bundleId)
 
   const { error } = await supabase.from('bundles').delete().eq('id', bundleId)

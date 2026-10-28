@@ -22,9 +22,6 @@ interface DashboardOrderItem {
   created_at?: string
 }
 
-// Helper fetcher chunking otomatis:
-// Menjamin semua data dalam rentang waktu terambil lengkap tanpa terpotong batas limit 1000 baris PostgREST
-// Selalu diurutkan DESCENDING agar data transaksi terbaru (Hari Ini / 7 Hari) selalu berada di urutan teratas.
 async function fetchAllSince<T>(
   supabase: Awaited<ReturnType<typeof createClient>>,
   table: string,
@@ -47,8 +44,6 @@ async function fetchAllSince<T>(
     allRows.push(...(data as unknown as T[]))
     if (data.length < PAGE_SIZE) break
     from += PAGE_SIZE
-
-    // Batas pengaman agar egress tetap super hemat (maksimal 4.000 baris ~ 60 KB)
     if (from >= 4000) break
   }
 
@@ -58,47 +53,32 @@ async function fetchAllSince<T>(
 export default async function DashboardPage() {
   const supabase = await createClient()
   const session = await getSession()
-
-  // Tentukan batas waktu awal agar mencakup 'Hari Ini', '7 Hari', 'Bulan Ini', dan '30 Hari'
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
   const thirtyFiveDaysAgo = new Date(Date.now() - 35 * 24 * 60 * 60 * 1000)
   const minDate = startOfMonth < thirtyFiveDaysAgo ? startOfMonth : thirtyFiveDaysAgo
   const sinceIso = minDate.toISOString()
-
-  // Jalankan query secara paralel agar waktu load sangat cepat & hemat egress
   const [orders, orderItems, productsRes, categoriesRes, profilesRes, storeProfileRes] =
     await Promise.all([
-      // 1. Ambil seluruh transaksi dalam periode aktif (DESC)
       fetchAllSince<Order>(
         supabase,
         'orders',
         'id, shift_id, user_id, cashier_name, order_number, table_number, guest_count, subtotal, tax, total, payment_method, status, custom_discount, cash_amount, change_amount, payment_details, created_at',
         sinceIso
       ),
-
-      // 2. Ambil seluruh item transaksi terkait dalam periode aktif (DESC)
       fetchAllSince<DashboardOrderItem>(
         supabase,
         'order_items',
         'id, order_id, product_id, qty, unit_price, total_price, bundle_name, applied_promo_name, created_at',
         sinceIso
       ),
-
-      // 3. Ambil data produk aktif untuk valuasi aset stok & pergerakan barang
       supabase
         .from('products')
         .select('id, category_id, name, sku, buy_price, sell_price, stock_qty, low_stock_threshold, is_deleted')
         .eq('is_deleted', false)
         .order('name', { ascending: true }),
-
-      // 4. Kategori produk
       supabase.from('categories').select('id, name').order('name', { ascending: true }),
-
-      // 5. Profil user / kasir
       supabase.from('profiles').select('id, name, email, role').order('name', { ascending: true }),
-
-      // 6. Profil toko untuk detail struk & export
       supabase.from('store_profile').select('*').limit(1).maybeSingle(),
     ])
 

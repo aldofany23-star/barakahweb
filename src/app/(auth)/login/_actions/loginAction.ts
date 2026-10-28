@@ -14,8 +14,6 @@ export async function loginAction(formData: FormData) {
 
   try {
     const supabase = await createClient()
-
-    // 1. Cari via email (case-insensitive)
     const { data: profileByEmail } = await supabase
       .from('profiles')
       .select('*')
@@ -24,8 +22,6 @@ export async function loginAction(formData: FormData) {
       .maybeSingle()
 
     let matchedProfile: Profile | null = profileByEmail
-
-    // 2. Jika tidak ditemukan, cari via nama lengkap (case-insensitive)
     if (!matchedProfile) {
       const { data: profileByName } = await supabase
         .from('profiles')
@@ -44,7 +40,6 @@ export async function loginAction(formData: FormData) {
       }
     }
 
-    // Simpan session cookie
     await createSession(matchedProfile)
 
     return { success: true }
