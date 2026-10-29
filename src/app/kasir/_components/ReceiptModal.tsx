@@ -1,9 +1,11 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Order, CartItem, StoreProfile } from '@/types/database'
 import { formatRupiah } from '@/lib/utils'
-import { Printer, ChevronLeft, X } from 'lucide-react'
+import { Printer, ChevronLeft, X, Loader2, CheckCircle2 } from 'lucide-react'
+import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
+import { isValidWhatsAppPhone, shareReceiptToWhatsApp } from '@/lib/whatsapp'
 
 interface ReceiptModalProps {
   order: Order | null
@@ -27,11 +29,36 @@ export function ReceiptModal({
   onClose,
 }: ReceiptModalProps) {
   const receiptRef = useRef<HTMLDivElement>(null)
+  const [isSharing, setIsSharing] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   if (!isOpen || !order) return null
 
+  const hasWhatsApp = isValidWhatsAppPhone(order.table_number)
+
   const handlePrint = () => {
     window.print()
+  }
+
+  const handleShareWhatsApp = async () => {
+    if (!receiptRef.current || !order || !order.table_number) return
+    setIsSharing(true)
+    setToastMessage(null)
+    try {
+      const res = await shareReceiptToWhatsApp({
+        element: receiptRef.current,
+        phone: order.table_number,
+        storeProfile,
+      })
+      if (res.success && res.message && res.method === 'clipboard_and_web') {
+        setToastMessage(res.message)
+        setTimeout(() => setToastMessage(null), 6000)
+      }
+    } catch (err) {
+      console.error('Share WhatsApp error:', err)
+    } finally {
+      setIsSharing(false)
+    }
   }
 
   // Perhitungan persis 100% sesuai ReceiptTicketView di SharedComponents.kt
@@ -91,7 +118,7 @@ export function ReceiptModal({
               <div className="flex justify-center mb-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/logo.png"
+                  src="/icon-128.png"
                   alt="Logo"
                   className="w-16 h-16 object-contain"
                   onError={(e) => {
@@ -132,6 +159,9 @@ export function ReceiptModal({
                   <div>
                     <div>{orderDateStr}</div>
                     <div>Kasir: {order.cashier_name || 'Kasir'}</div>
+                    {order.table_number && (
+                      <div>Pelanggan: {order.table_number}</div>
+                    )}
                   </div>
                   <div className="text-right">
                     <div>Tipe:</div>
@@ -294,19 +324,47 @@ export function ReceiptModal({
             </div>
           </div>
 
-          {/* Sticky Footer Buttons (Mirrors CashierScreen.kt:295-396) */}
-          <div className="px-5 py-3.5 bg-white border-t border-[#e2e2e2] flex items-center gap-2.5 print:hidden">
+          {/* Feedback Toast */}
+          {toastMessage && (
+            <div className="mx-5 mb-1 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-[11px] flex items-center gap-2 print:hidden animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 text-[#00A250] shrink-0" />
+              <span>{toastMessage}</span>
+            </div>
+          )}
+
+          {/* Sticky Footer Buttons */}
+          <div className="px-5 py-3.5 bg-white border-t border-[#e2e2e2] flex items-center gap-2 sm:gap-2.5 print:hidden">
             <button
+              type="button"
               onClick={handlePrint}
-              className="h-11 px-4 text-xs font-semibold text-[#00A250] bg-white border border-[#00A250] hover:bg-[#eef8f2] rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+              className="h-10 px-3.5 sm:px-4 text-xs font-semibold text-gray-700 bg-white border border-[#e2e2e2] hover:bg-gray-50 hover:text-[#262626] rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs shrink-0"
             >
-              <Printer className="w-4 h-4" />
-              <span>Print Struk</span>
+              <Printer className="w-4 h-4 text-gray-500" />
+              <span className="hidden sm:inline">Print Struk</span>
+              <span className="sm:hidden">Print</span>
             </button>
 
+            {hasWhatsApp && (
+              <button
+                type="button"
+                onClick={handleShareWhatsApp}
+                disabled={isSharing}
+                title={`Kirim WhatsApp ke ${order.table_number}`}
+                className="h-10 px-3.5 sm:px-4 text-xs font-semibold text-gray-700 bg-white border border-[#e2e2e2] hover:bg-emerald-50/50 hover:border-emerald-300 hover:text-emerald-700 active:scale-[0.98] rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs shrink-0 disabled:opacity-50"
+              >
+                {isSharing ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-[#00A250] shrink-0" />
+                ) : (
+                  <WhatsAppIcon className="w-4 h-4 text-[#25D366] shrink-0" />
+                )}
+                <span>Share WA</span>
+              </button>
+            )}
+
             <button
+              type="button"
               onClick={onClose}
-              className="flex-1 h-11 text-xs sm:text-sm font-bold text-white bg-[#00A250] hover:bg-[#008f46] rounded-xl shadow-2xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+              className="flex-1 h-10 text-xs sm:text-sm font-bold text-white bg-[#00A250] hover:bg-[#008f46] active:scale-[0.98] rounded-xl shadow-2xs transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Pesanan Baru</span>
             </button>

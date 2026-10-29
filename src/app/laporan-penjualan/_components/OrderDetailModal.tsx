@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { Order, OrderItem, StoreProfile } from '@/types/database'
 import { createClient } from '@/lib/supabase/client'
 import { formatRupiah } from '@/lib/utils'
-import { X, Printer, Receipt, Loader2 } from 'lucide-react'
+import { X, Printer, Receipt, Loader2, CheckCircle2 } from 'lucide-react'
+import { WhatsAppIcon } from '@/components/ui/WhatsAppIcon'
+import { isValidWhatsAppPhone, shareReceiptToWhatsApp } from '@/lib/whatsapp'
 
 interface OrderDetailModalProps {
   order: Order | null
@@ -35,8 +37,13 @@ export function OrderDetailModal({
   isOpen,
   onClose,
 }: OrderDetailModalProps) {
+  const receiptRef = useRef<HTMLDivElement>(null)
   const [loadedItems, setLoadedItems] = useState<OrderItem[]>(order?.order_items || [])
   const [isLoadingItems, setIsLoadingItems] = useState(false)
+  const [isSharing, setIsSharing] = useState(false)
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const hasWhatsApp = isValidWhatsAppPhone(order?.table_number)
 
   // Fetch order items on-demand when modal is open if not already loaded
   useEffect(() => {
@@ -122,6 +129,27 @@ export function OrderDetailModal({
     window.print()
   }
 
+  const handleShareWhatsApp = async () => {
+    if (!receiptRef.current || !order || !order.table_number) return
+    setIsSharing(true)
+    setToastMessage(null)
+    try {
+      const res = await shareReceiptToWhatsApp({
+        element: receiptRef.current,
+        phone: order.table_number,
+        storeProfile,
+      })
+      if (res.success && res.message && res.method === 'clipboard_and_web') {
+        setToastMessage(res.message)
+        setTimeout(() => setToastMessage(null), 6000)
+      }
+    } catch (err) {
+      console.error('Share WhatsApp error:', err)
+    } finally {
+      setIsSharing(false)
+    }
+  }
+
   // Exact Android calculations
   const itemDiscountTotal = receiptItems.reduce((sum, item) => {
     if (item.originalPrice && item.originalPrice > item.price) {
@@ -162,6 +190,7 @@ export function OrderDetailModal({
           <div className="p-4 sm:p-5 overflow-y-auto flex-1 bg-gray-50 print:bg-white print:p-0">
             <div
               id="printable-receipt"
+              ref={receiptRef}
               className="w-full bg-white rounded-2xl border border-[#e5e7eb] p-5 shadow-xs font-mono text-xs text-black print:border-none print:shadow-none print:p-0 print:rounded-none"
             >
               {/* Order Number Top (Mirrors Android SharedComponents.kt) */}
@@ -173,7 +202,7 @@ export function OrderDetailModal({
               <div className="flex justify-center mb-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/logo.png"
+                  src="/icon-128.png"
                   alt="Logo"
                   className="w-16 h-16 object-contain"
                   onError={(e) => {
@@ -395,18 +424,46 @@ export function OrderDetailModal({
             </div>
           </div>
 
+          {/* Feedback Toast */}
+          {toastMessage && (
+            <div className="mx-5 mb-1 p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-[11px] flex items-center gap-2 print:hidden animate-in fade-in">
+              <CheckCircle2 className="w-4 h-4 text-[#00A250] shrink-0" />
+              <span>{toastMessage}</span>
+            </div>
+          )}
+
           {/* Action Buttons */}
-          <div className="px-5 py-3.5 bg-white border-t border-[#e2e2e2] flex justify-end gap-2.5 print:hidden">
+          <div className="px-5 py-3.5 bg-white border-t border-[#e2e2e2] flex items-center justify-end gap-2 sm:gap-2.5 print:hidden">
             <button
+              type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-gray-700 bg-white border border-[#e2e2e2] hover:bg-gray-50 rounded-xl transition cursor-pointer shadow-2xs"
+              className="h-10 px-4 text-xs font-semibold text-gray-700 bg-white border border-[#e2e2e2] hover:bg-gray-50 rounded-xl transition cursor-pointer shadow-2xs"
             >
               Tutup
             </button>
+
+            {hasWhatsApp && (
+              <button
+                type="button"
+                onClick={handleShareWhatsApp}
+                disabled={isSharing || isLoadingItems}
+                title={`Kirim WhatsApp ke ${order.table_number}`}
+                className="h-10 px-3.5 sm:px-4 text-xs font-semibold text-gray-700 bg-white border border-[#e2e2e2] hover:bg-emerald-50/50 hover:border-emerald-300 hover:text-emerald-700 active:scale-[0.98] rounded-xl transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs disabled:opacity-50"
+              >
+                {isSharing ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-[#00A250] shrink-0" />
+                ) : (
+                  <WhatsAppIcon className="w-4 h-4 text-[#25D366] shrink-0" />
+                )}
+                <span>Share WA</span>
+              </button>
+            )}
+
             <button
+              type="button"
               onClick={handlePrint}
               disabled={isLoadingItems}
-              className="px-5 py-2 text-xs font-semibold bg-[#00A250] hover:bg-[#008f46] text-white rounded-xl shadow-2xs flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
+              className="h-10 px-4 sm:px-5 text-xs font-semibold bg-[#00A250] hover:bg-[#008f46] text-white rounded-xl shadow-2xs flex items-center justify-center gap-1.5 transition cursor-pointer disabled:opacity-50"
             >
               <Printer className="w-4 h-4" />
               <span>Print Struk</span>
