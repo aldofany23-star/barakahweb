@@ -18,8 +18,6 @@ import { CheckoutModal } from './CheckoutModal'
 import { ReceiptModal } from './ReceiptModal'
 import { BarakahPopupModal } from '@/components/ui/BarakahPopupModal'
 import { createClient } from '@/lib/supabase/client'
-import { formatRupiah } from '@/lib/utils'
-import { AlertCircle, ShoppingCart, ArrowRight } from 'lucide-react'
 
 interface CashierViewProps {
   initialProducts: Product[]
@@ -340,31 +338,6 @@ export function CashierView({
           />
         </div>
       </div>
-
-      {/* Mobile Floating Quick Cart Bar (Visible on mobile when in "products" tab and cart has items) */}
-      {mobileTab === 'products' && totalItemCount > 0 && (
-        <div className="xl:hidden fixed bottom-16 left-3 right-3 z-30">
-          <button
-            onClick={() => setMobileTab('cart')}
-            className="w-full bg-[#00A250] hover:bg-[#008f46] text-white p-3 rounded-xl shadow-lg flex items-center justify-between cursor-pointer transition active:scale-[0.99] border border-emerald-600"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-md bg-white/20 flex items-center justify-center font-bold text-xs">
-                {totalItemCount}
-              </div>
-              <div className="text-left">
-                <div className="text-[10px] text-white/80 font-medium">Keranjang ({totalItemCount} item)</div>
-                <div className="text-xs sm:text-sm font-bold">{formatRupiah(grandTotal)}</div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1 font-semibold text-xs bg-white text-[#00A250] px-3 py-1.5 rounded-lg shadow-2xs">
-              <span>Lihat Keranjang</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </div>
-          </button>
-        </div>
-      )}
 
       {/* Checkout Modal */}
       <CheckoutModal

@@ -37,7 +37,33 @@ export function ReceiptModal({
   const hasWhatsApp = isValidWhatsAppPhone(order.table_number)
 
   const handlePrint = () => {
+    if (!receiptRef.current) {
+      window.print()
+      return
+    }
+
+    // Buat kontainer cetak langsung di body agar terisolasi dari sisa halaman kasir
+    const printDiv = document.createElement('div')
+    printDiv.id = 'pos-print-area'
+    printDiv.className = receiptRef.current.className
+    printDiv.innerHTML = receiptRef.current.innerHTML
+    document.body.appendChild(printDiv)
+
+    document.body.classList.add('is-printing-struk')
+
+    const cleanup = () => {
+      document.body.classList.remove('is-printing-struk')
+      if (document.body.contains(printDiv)) {
+        document.body.removeChild(printDiv)
+      }
+      window.removeEventListener('afterprint', cleanup)
+    }
+
+    window.addEventListener('afterprint', cleanup)
+
     window.print()
+
+    setTimeout(cleanup, 1500)
   }
 
   const handleShareWhatsApp = async () => {
@@ -77,8 +103,8 @@ export function ReceiptModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 print:p-0 print:bg-white">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-[#e2e2e2] overflow-hidden flex flex-col max-h-[92vh] print:border-none print:shadow-none print:max-w-none print:w-full">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 print:static print:inset-auto print:p-0 print:bg-white print:block print:h-auto print:overflow-visible">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-[#e2e2e2] overflow-hidden flex flex-col max-h-[92vh] print:border-none print:shadow-none print:max-w-none print:w-full print:max-h-none print:overflow-visible">
           {/* Header (Mirrors CashierScreen.kt:233-255) */}
           <div className="px-4 py-3.5 border-b border-[#e2e2e2] flex items-center justify-between print:hidden">
             <div className="flex items-center gap-2">
@@ -374,22 +400,63 @@ export function ReceiptModal({
 
       {/* Global CSS for Print Media */}
       <style jsx global>{`
+        #pos-print-area {
+          display: none;
+        }
+
         @media print {
-          body * {
+          @page {
+            size: auto;
+            margin: 0mm;
+          }
+          html,
+          body {
+            height: auto !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff !important;
+            overflow: visible !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+
+          /* Sembunyikan semua elemen aplikasi di body saat print struk */
+          body.is-printing-struk > *:not(#pos-print-area) {
+            display: none !important;
+          }
+
+          /* Tampilkan HANYA struk dengan lebar thermal standar 80mm */
+          body.is-printing-struk #pos-print-area {
+            display: block !important;
+            width: 100% !important;
+            max-width: 80mm !important;
+            margin: 0 auto !important;
+            padding: 6px 8px !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: #fff !important;
+            color: #000 !important;
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+
+          /* Fallback jika menggunakan shortcut Ctrl+P langsung */
+          body:not(.is-printing-struk) * {
             visibility: hidden;
           }
-          #printable-receipt,
-          #printable-receipt * {
+          body:not(.is-printing-struk) #printable-receipt,
+          body:not(.is-printing-struk) #printable-receipt * {
             visibility: visible;
           }
-          #printable-receipt {
+          body:not(.is-printing-struk) #printable-receipt {
             position: absolute;
             left: 0;
             top: 0;
             width: 100% !important;
             max-width: 80mm !important;
             margin: 0 auto;
-            padding: 0 !important;
+            padding: 4px 6px !important;
             border: none !important;
             box-shadow: none !important;
           }
